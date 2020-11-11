@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "App.svelte"
+  ],
+  "sourcesContent": [
+    "<script>\n  import { fly } from 'svelte/transition';\n\n  const events = ['333', '222', '444', 'minx', 'pyram'];\n</script>\n\n<style>\n  main {\n    text-align: center;\n    position: relative;\n    top: 30%;\n  }\n\n  h1 {\n    text-transform: uppercase;\n  }\n\n  .card {\n    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;\n    transition-duration: 0.5s;\n  }\n  .card:hover {\n    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;\n    transition-duration: 0.5s;\n  }\n</style>\n\n<!-- <main transition:fly={{ y: -150, duration: 3000 }}>\n  <h1>Cube Competitions</h1>\n  <p>Log in to discord</p>\n</main> -->\n\n<nav class=\"navbar navbar-dark bg-dark\">\n  <span class=\"navbar-brand\">\n    <img\n      src=\"https://cdn.discordapp.com/avatars/719150209602682961/f96a59f0d56be5698a9ce5fd72ddff92.png\"\n      width=\"30\"\n      height=\"30\"\n      class=\"d-inline-block align-top mr-1 rounded-circle\"\n      alt=\"\"\n      loading=\"lazy\" />\n    Welcome Mano\n  </span>\n</nav>\n\n<div class=\"container\">\n  <div\n    class=\"row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 text-center\">\n    {#each events as e}\n      <div class=\"col mt-4\">\n        <div class=\"card\">\n          <img src=\"img/{e}.svg\" class=\"card-img-top\" alt={e} />\n          <div class=\"card-footer bg-transparent\">\n            <h4 class=\"\">{e}</h4>\n          </div>\n        </div>\n      </div>\n    {/each}\n  </div>\n</div>\n"
+  ],
+  "names": [],
+  "mappings": "AAiBE,KAAK,eAAC,CAAC,AACL,UAAU,CAAE,CAAC,CAAC,QAAQ,CAAC,OAAO,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,UAAU,CAC9D,mBAAmB,CAAE,IAAI,AAC3B,CAAC,AACD,oBAAK,MAAM,AAAC,CAAC,AACX,UAAU,CAAE,CAAC,CAAC,MAAM,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,UAAU,CACxD,mBAAmB,CAAE,IAAI,AAC3B,CAAC"
+}

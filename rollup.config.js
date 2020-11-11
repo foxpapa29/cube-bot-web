@@ -38,7 +38,7 @@ export default {
     sourcemap: true,
     format: 'iife',
     name: 'app',
-    file: 'public/build/bundle.js',
+    file: 'docs/build/bundle.js',
   },
   plugins: [
     svelte({
@@ -53,7 +53,7 @@ export default {
     }),
     commonjs(),
     !production && serve(),
-    !production && livereload('public'),
+    !production && livereload('docs'),
     production && analyze({ summaryOnly: true, limit: 10 }),
     production && terser(),
   ],
