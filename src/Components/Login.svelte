@@ -4,17 +4,12 @@
 
 <style>
   main {
-    text-align: center;
     position: relative;
     top: 30%;
   }
-
-  h1 {
-    text-transform: uppercase;
-  }
 </style>
 
-<main in:fly={{ y: -150, duration: 3000 }}>
-  <h1>Cube Competitions</h1>
-  <p>You must log in to discord to continue</p>
+<main class="text-center" in:fly={{ y: -150, duration: 3000 }}>
+  <h1 class="display-3">CUBE COMPETITIONS</h1>
+  <p class="lead">You must log in to discord to continue</p>
 </main>

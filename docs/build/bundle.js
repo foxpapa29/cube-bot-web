@@ -362,117 +362,6 @@ var app = (function () {
             }
         };
     }
-    function create_bidirectional_transition(node, fn, params, intro) {
-        let config = fn(node, params);
-        let t = intro ? 0 : 1;
-        let running_program = null;
-        let pending_program = null;
-        let animation_name = null;
-        function clear_animation() {
-            if (animation_name)
-                delete_rule(node, animation_name);
-        }
-        function init(program, duration) {
-            const d = program.b - t;
-            duration *= Math.abs(d);
-            return {
-                a: t,
-                b: program.b,
-                d,
-                duration,
-                start: program.start,
-                end: program.start + duration,
-                group: program.group
-            };
-        }
-        function go(b) {
-            const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
-            const program = {
-                start: now() + delay,
-                b
-            };
-            if (!b) {
-                // @ts-ignore todo: improve typings
-                program.group = outros;
-                outros.r += 1;
-            }
-            if (running_program || pending_program) {
-                pending_program = program;
-            }
-            else {
-                // if this is an intro, and there's a delay, we need to do
-                // an initial tick and/or apply CSS animation immediately
-                if (css) {
-                    clear_animation();
-                    animation_name = create_rule(node, t, b, duration, delay, easing, css);
-                }
-                if (b)
-                    tick(0, 1);
-                running_program = init(program, duration);
-                add_render_callback(() => dispatch(node, b, 'start'));
-                loop(now => {
-                    if (pending_program && now > pending_program.start) {
-                        running_program = init(pending_program, duration);
-                        pending_program = null;
-                        dispatch(node, running_program.b, 'start');
-                        if (css) {
-                            clear_animation();
-                            animation_name = create_rule(node, t, running_program.b, running_program.duration, 0, easing, config.css);
-                        }
-                    }
-                    if (running_program) {
-                        if (now >= running_program.end) {
-                            tick(t = running_program.b, 1 - t);
-                            dispatch(node, running_program.b, 'end');
-                            if (!pending_program) {
-                                // we're done
-                                if (running_program.b) {
-                                    // intro — we can tidy up immediately
-                                    clear_animation();
-                                }
-                                else {
-                                    // outro — needs to be coordinated
-                                    if (!--running_program.group.r)
-                                        run_all(running_program.group.c);
-                                }
-                            }
-                            running_program = null;
-                        }
-                        else if (now >= running_program.start) {
-                            const p = now - running_program.start;
-                            t = running_program.a + running_program.d * easing(p / running_program.duration);
-                            tick(t, 1 - t);
-                        }
-                    }
-                    return !!(running_program || pending_program);
-                });
-            }
-        }
-        return {
-            run(b) {
-                if (is_function(config)) {
-                    wait().then(() => {
-                        // @ts-ignore
-                        config = config();
-                        go(b);
-                    });
-                }
-                else {
-                    go(b);
-                }
-            },
-            end() {
-                clear_animation();
-                running_program = pending_program = null;
-            }
-        };
-    }
-
-    const globals = (typeof window !== 'undefined'
-        ? window
-        : typeof globalThis !== 'undefined'
-            ? globalThis
-            : global);
 
     function bind(component, name, callback) {
         const index = component.$$.props[name];
@@ -688,7 +577,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (59:4) {:else}
+    // (55:4) {:else}
     function create_else_block(ctx) {
     	let a;
     	let mounted;
@@ -700,7 +589,7 @@ var app = (function () {
     			a.textContent = "Log in";
     			attr_dev(a, "class", "btn btn-light text-reset");
     			attr_dev(a, "href", "#");
-    			add_location(a, file, 59, 6, 1970);
+    			add_location(a, file, 55, 6, 1736);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, a, anchor);
@@ -722,7 +611,7 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(59:4) {:else}",
+    		source: "(55:4) {:else}",
     		ctx
     	});
 
@@ -732,50 +621,27 @@ var app = (function () {
     // (12:4) {#if isLoggedin}
     function create_if_block(ctx) {
     	let button;
-    	let span0;
+    	let span;
     	let t0;
-    	let div;
-    	let ul;
-    	let li0;
-    	let a0;
+    	let div2;
+    	let div1;
+    	let div0;
     	let t2;
-    	let li1;
-    	let a1;
-    	let t4;
-    	let li2;
-    	let a2;
-    	let t6;
-    	let span1;
-    	let t8;
-    	let if_block_anchor;
     	let if_block = /*currentEvent*/ ctx[1] && create_if_block_1(ctx);
 
     	const block = {
     		c: function create() {
     			button = element("button");
-    			span0 = element("span");
+    			span = element("span");
     			t0 = space();
-    			div = element("div");
-    			ul = element("ul");
-    			li0 = element("li");
-    			a0 = element("a");
-    			a0.textContent = "Home";
+    			div2 = element("div");
+    			div1 = element("div");
+    			div0 = element("div");
+    			div0.textContent = "Rankings";
     			t2 = space();
-    			li1 = element("li");
-    			a1 = element("a");
-    			a1.textContent = "Features";
-    			t4 = space();
-    			li2 = element("li");
-    			a2 = element("a");
-    			a2.textContent = "Pricing";
-    			t6 = space();
-    			span1 = element("span");
-    			span1.textContent = "Navbar text with an inline element";
-    			t8 = space();
     			if (if_block) if_block.c();
-    			if_block_anchor = empty();
-    			attr_dev(span0, "class", "navbar-toggler-icon");
-    			add_location(span0, file, 20, 8, 572);
+    			attr_dev(span, "class", "navbar-toggler-icon");
+    			add_location(span, file, 20, 8, 589);
     			attr_dev(button, "class", "navbar-toggler");
     			attr_dev(button, "type", "button");
     			attr_dev(button, "data-toggle", "collapse");
@@ -783,50 +649,25 @@ var app = (function () {
     			attr_dev(button, "aria-controls", "navbarText");
     			attr_dev(button, "aria-expanded", "false");
     			attr_dev(button, "aria-label", "Toggle navigation");
-    			add_location(button, file, 12, 6, 333);
-    			attr_dev(a0, "class", "nav-link active");
-    			attr_dev(a0, "aria-current", "page");
-    			attr_dev(a0, "href", "#");
-    			add_location(a0, file, 25, 12, 783);
-    			attr_dev(li0, "class", "nav-item");
-    			add_location(li0, file, 24, 10, 749);
-    			attr_dev(a1, "class", "nav-link");
-    			attr_dev(a1, "href", "#");
-    			add_location(a1, file, 27, 31, 895);
-    			attr_dev(li1, "class", "nav-item");
-    			add_location(li1, file, 27, 10, 874);
-    			attr_dev(a2, "class", "nav-link");
-    			attr_dev(a2, "href", "#");
-    			add_location(a2, file, 28, 31, 973);
-    			attr_dev(li2, "class", "nav-item");
-    			add_location(li2, file, 28, 10, 952);
-    			attr_dev(ul, "class", "navbar-nav mr-auto mb-2 mb-lg-0");
-    			add_location(ul, file, 23, 8, 694);
-    			attr_dev(span1, "class", "navbar-text");
-    			add_location(span1, file, 30, 8, 1041);
-    			attr_dev(div, "class", "collapse navbar-collapse");
-    			attr_dev(div, "id", "navbarText");
-    			add_location(div, file, 22, 6, 631);
+    			add_location(button, file, 12, 6, 350);
+    			attr_dev(div0, "class", "nav-link");
+    			attr_dev(div0, "href", "#");
+    			add_location(div0, file, 25, 10, 768);
+    			attr_dev(div1, "class", "navbar-nav mr-auto mb-2 mb-lg-0");
+    			add_location(div1, file, 24, 8, 712);
+    			attr_dev(div2, "class", "collapse navbar-collapse");
+    			attr_dev(div2, "id", "navbarText");
+    			add_location(div2, file, 23, 6, 649);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
-    			append_dev(button, span0);
+    			append_dev(button, span);
     			insert_dev(target, t0, anchor);
-    			insert_dev(target, div, anchor);
-    			append_dev(div, ul);
-    			append_dev(ul, li0);
-    			append_dev(li0, a0);
-    			append_dev(ul, t2);
-    			append_dev(ul, li1);
-    			append_dev(li1, a1);
-    			append_dev(ul, t4);
-    			append_dev(ul, li2);
-    			append_dev(li2, a2);
-    			append_dev(div, t6);
-    			append_dev(div, span1);
-    			insert_dev(target, t8, anchor);
-    			if (if_block) if_block.m(target, anchor);
-    			insert_dev(target, if_block_anchor, anchor);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div1);
+    			append_dev(div1, div0);
+    			append_dev(div2, t2);
+    			if (if_block) if_block.m(div2, null);
     		},
     		p: function update(ctx, dirty) {
     			if (/*currentEvent*/ ctx[1]) {
@@ -835,7 +676,7 @@ var app = (function () {
     				} else {
     					if_block = create_if_block_1(ctx);
     					if_block.c();
-    					if_block.m(if_block_anchor.parentNode, if_block_anchor);
+    					if_block.m(div2, null);
     				}
     			} else if (if_block) {
     				if_block.d(1);
@@ -845,10 +686,8 @@ var app = (function () {
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(button);
     			if (detaching) detach_dev(t0);
-    			if (detaching) detach_dev(div);
-    			if (detaching) detach_dev(t8);
-    			if (if_block) if_block.d(detaching);
-    			if (detaching) detach_dev(if_block_anchor);
+    			if (detaching) detach_dev(div2);
+    			if (if_block) if_block.d();
     		}
     	};
 
@@ -863,14 +702,13 @@ var app = (function () {
     	return block;
     }
 
-    // (33:6) {#if currentEvent}
+    // (28:8) {#if currentEvent}
     function create_if_block_1(ctx) {
-    	let div1;
+    	let span;
     	let button;
-    	let t0_value = (/*currentEvent*/ ctx[1] ?? "All") + "";
     	let t0;
     	let t1;
-    	let div0;
+    	let div;
     	let h6;
     	let t3;
     	let each_value = /*events*/ ctx[2];
@@ -883,11 +721,11 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
-    			div1 = element("div");
+    			span = element("span");
     			button = element("button");
-    			t0 = text(t0_value);
+    			t0 = text(/*currentEvent*/ ctx[1]);
     			t1 = space();
-    			div0 = element("div");
+    			div = element("div");
     			h6 = element("h6");
     			h6.textContent = "Event";
     			t3 = space();
@@ -902,30 +740,30 @@ var app = (function () {
     			attr_dev(button, "data-toggle", "dropdown");
     			attr_dev(button, "aria-haspopup", "true");
     			attr_dev(button, "aria-expanded", "false");
-    			add_location(button, file, 34, 10, 1190);
+    			add_location(button, file, 29, 12, 902);
     			attr_dev(h6, "class", "dropdown-header");
-    			add_location(h6, file, 46, 12, 1600);
-    			attr_dev(div0, "class", "dropdown-menu dropdown-menu-right");
-    			attr_dev(div0, "aria-labelledby", "navbarDropdown");
-    			add_location(div0, file, 43, 10, 1483);
-    			attr_dev(div1, "class", "dropdown");
-    			add_location(div1, file, 33, 8, 1157);
+    			add_location(h6, file, 41, 14, 1330);
+    			attr_dev(div, "class", "dropdown-menu dropdown-menu-sm-right");
+    			attr_dev(div, "aria-labelledby", "navbarDropdown");
+    			add_location(div, file, 38, 12, 1204);
+    			attr_dev(span, "class", "dropdown");
+    			add_location(span, file, 28, 10, 866);
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div1, anchor);
-    			append_dev(div1, button);
+    			insert_dev(target, span, anchor);
+    			append_dev(span, button);
     			append_dev(button, t0);
-    			append_dev(div1, t1);
-    			append_dev(div1, div0);
-    			append_dev(div0, h6);
-    			append_dev(div0, t3);
+    			append_dev(span, t1);
+    			append_dev(span, div);
+    			append_dev(div, h6);
+    			append_dev(div, t3);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div0, null);
+    				each_blocks[i].m(div, null);
     			}
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*currentEvent*/ 2 && t0_value !== (t0_value = (/*currentEvent*/ ctx[1] ?? "All") + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*currentEvent*/ 2) set_data_dev(t0, /*currentEvent*/ ctx[1]);
 
     			if (dirty & /*currentEvent, events*/ 6) {
     				each_value = /*events*/ ctx[2];
@@ -940,7 +778,7 @@ var app = (function () {
     					} else {
     						each_blocks[i] = create_each_block(child_ctx);
     						each_blocks[i].c();
-    						each_blocks[i].m(div0, null);
+    						each_blocks[i].m(div, null);
     					}
     				}
 
@@ -952,7 +790,7 @@ var app = (function () {
     			}
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div1);
+    			if (detaching) detach_dev(span);
     			destroy_each(each_blocks, detaching);
     		}
     	};
@@ -961,14 +799,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(33:6) {#if currentEvent}",
+    		source: "(28:8) {#if currentEvent}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (49:14) {#if e !== currentEvent}
+    // (44:16) {#if e !== currentEvent}
     function create_if_block_2(ctx) {
     	let button;
     	let t_value = /*e*/ ctx[6] + "";
@@ -986,7 +824,7 @@ var app = (function () {
     			t = text(t_value);
     			attr_dev(button, "class", "dropdown-item");
     			attr_dev(button, "href", "#");
-    			add_location(button, file, 49, 16, 1726);
+    			add_location(button, file, 44, 18, 1462);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
@@ -1011,14 +849,14 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(49:14) {#if e !== currentEvent}",
+    		source: "(44:16) {#if e !== currentEvent}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (48:12) {#each events as e}
+    // (43:14) {#each events as e}
     function create_each_block(ctx) {
     	let if_block_anchor;
     	let if_block = /*e*/ ctx[6] !== /*currentEvent*/ ctx[1] && create_if_block_2(ctx);
@@ -1056,7 +894,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(48:12) {#each events as e}",
+    		source: "(43:14) {#each events as e}",
     		ctx
     	});
 
@@ -1088,10 +926,10 @@ var app = (function () {
     			t1 = space();
     			if_block.c();
     			attr_dev(div0, "class", "navbar-brand");
-    			add_location(div0, file, 8, 4, 207);
+    			add_location(div0, file, 8, 4, 224);
     			attr_dev(div1, "class", "container-fluid");
-    			add_location(div1, file, 7, 2, 173);
-    			attr_dev(nav, "class", "navbar navbar-dark bg-dark fixed-top");
+    			add_location(div1, file, 7, 2, 190);
+    			attr_dev(nav, "class", "navbar navbar-expand-sm navbar-dark bg-dark fixed-top");
     			add_location(nav, file, 6, 0, 120);
     		},
     		l: function claim(nodes) {
@@ -1269,15 +1107,16 @@ var app = (function () {
     		c: function create() {
     			main = element("main");
     			h1 = element("h1");
-    			h1.textContent = "Cube Competitions";
+    			h1.textContent = "CUBE COMPETITIONS";
     			t1 = space();
     			p = element("p");
     			p.textContent = "You must log in to discord to continue";
-    			attr_dev(h1, "class", "svelte-1tdknn5");
-    			add_location(h1, file$1, 17, 2, 245);
-    			add_location(p, file$1, 18, 2, 274);
-    			attr_dev(main, "class", "svelte-1tdknn5");
-    			add_location(main, file$1, 16, 0, 199);
+    			attr_dev(h1, "class", "display-3");
+    			add_location(h1, file$1, 12, 2, 198);
+    			attr_dev(p, "class", "lead");
+    			add_location(p, file$1, 13, 2, 245);
+    			attr_dev(main, "class", "text-center svelte-bv9sba");
+    			add_location(main, file$1, 11, 0, 132);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1383,15 +1222,15 @@ var app = (function () {
     			if (img.src !== (img_src_value = "img/" + /*e*/ ctx[3] + ".svg")) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "class", "card-img-top");
     			attr_dev(img, "alt", img_alt_value = /*e*/ ctx[3]);
-    			add_location(img, file$2, 24, 10, 676);
+    			add_location(img, file$2, 24, 10, 668);
     			attr_dev(h4, "class", "");
-    			add_location(h4, file$2, 26, 12, 794);
+    			add_location(h4, file$2, 26, 12, 786);
     			attr_dev(div0, "class", "card-footer bg-transparent");
-    			add_location(div0, file$2, 25, 10, 741);
+    			add_location(div0, file$2, 25, 10, 733);
     			attr_dev(div1, "class", "card svelte-81ewok");
-    			add_location(div1, file$2, 23, 8, 611);
+    			add_location(div1, file$2, 23, 8, 603);
     			attr_dev(div2, "class", "col mt-4");
-    			add_location(div2, file$2, 22, 6, 580);
+    			add_location(div2, file$2, 22, 6, 572);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
@@ -1432,8 +1271,7 @@ var app = (function () {
     function create_fragment$2(ctx) {
     	let div1;
     	let div0;
-    	let div1_transition;
-    	let current;
+    	let div1_intro;
     	let each_value = /*events*/ ctx[1];
     	validate_each_argument(each_value);
     	let each_blocks = [];
@@ -1452,7 +1290,7 @@ var app = (function () {
     			}
 
     			attr_dev(div0, "class", "row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 text-center");
-    			add_location(div0, file$2, 19, 2, 463);
+    			add_location(div0, file$2, 19, 2, 455);
     			attr_dev(div1, "class", "container");
     			add_location(div1, file$2, 18, 0, 401);
     		},
@@ -1466,8 +1304,6 @@ var app = (function () {
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(div0, null);
     			}
-
-    			current = true;
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*currentEvent, events*/ 3) {
@@ -1495,24 +1331,17 @@ var app = (function () {
     			}
     		},
     		i: function intro(local) {
-    			if (current) return;
-
-    			add_render_callback(() => {
-    				if (!div1_transition) div1_transition = create_bidirectional_transition(div1, fade, { duration: 250 }, true);
-    				div1_transition.run(1);
-    			});
-
-    			current = true;
+    			if (!div1_intro) {
+    				add_render_callback(() => {
+    					div1_intro = create_in_transition(div1, fade, { duration: 250 });
+    					div1_intro.start();
+    				});
+    			}
     		},
-    		o: function outro(local) {
-    			if (!div1_transition) div1_transition = create_bidirectional_transition(div1, fade, { duration: 250 }, false);
-    			div1_transition.run(0);
-    			current = false;
-    		},
+    		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
     			destroy_each(each_blocks, detaching);
-    			if (detaching && div1_transition) div1_transition.end();
     		}
     	};
 
@@ -1816,761 +1645,238 @@ var app = (function () {
     const file$4 = "src/Components/Solve.svelte";
 
     function create_fragment$4(ctx) {
-    	let div6;
-    	let div5;
-    	let main;
+    	let div3;
     	let div2;
+    	let main;
+    	let div0;
     	let h1;
     	let t1;
-    	let div1;
-    	let div0;
-    	let button0;
-    	let t3;
-    	let button1;
-    	let t5;
-    	let button2;
-    	let svg0;
-    	let rect;
-    	let line0;
-    	let line1;
-    	let line2;
-    	let t6;
-    	let t7;
     	let timer;
-    	let t8;
-    	let h2;
-    	let t10;
-    	let div3;
-    	let table;
-    	let thead;
-    	let tr0;
-    	let th0;
-    	let t12;
-    	let th1;
-    	let t14;
-    	let th2;
-    	let t16;
-    	let th3;
-    	let t18;
-    	let th4;
-    	let t20;
-    	let tbody;
-    	let tr1;
-    	let td0;
-    	let t22;
-    	let td1;
-    	let t24;
-    	let td2;
-    	let t26;
-    	let td3;
-    	let t28;
-    	let td4;
-    	let t30;
-    	let tr2;
-    	let td5;
-    	let t32;
-    	let td6;
-    	let t34;
-    	let td7;
-    	let t36;
-    	let td8;
-    	let t38;
-    	let td9;
-    	let t40;
-    	let tr3;
-    	let td10;
-    	let t42;
-    	let td11;
-    	let t44;
-    	let td12;
-    	let t46;
-    	let td13;
-    	let t48;
-    	let td14;
-    	let t50;
-    	let tr4;
-    	let td15;
-    	let t52;
-    	let td16;
-    	let t54;
-    	let td17;
-    	let t56;
-    	let td18;
-    	let t58;
-    	let td19;
-    	let t60;
-    	let tr5;
-    	let td20;
-    	let t62;
-    	let td21;
-    	let t64;
-    	let td22;
-    	let t66;
-    	let td23;
-    	let t68;
-    	let td24;
-    	let t70;
-    	let tr6;
-    	let td25;
-    	let t72;
-    	let td26;
-    	let t74;
-    	let td27;
-    	let t76;
-    	let td28;
-    	let t78;
-    	let td29;
-    	let t80;
-    	let tr7;
-    	let td30;
-    	let t82;
-    	let td31;
-    	let t84;
-    	let td32;
-    	let t86;
-    	let td33;
-    	let t88;
-    	let td34;
-    	let t90;
-    	let tr8;
-    	let td35;
-    	let t92;
-    	let td36;
-    	let t94;
-    	let td37;
-    	let t96;
-    	let td38;
-    	let t98;
-    	let td39;
-    	let t100;
-    	let tr9;
-    	let td40;
-    	let t102;
-    	let td41;
-    	let t104;
-    	let td42;
-    	let t106;
-    	let td43;
-    	let t108;
-    	let td44;
-    	let t110;
-    	let tr10;
-    	let td45;
-    	let t112;
-    	let td46;
-    	let t114;
-    	let td47;
-    	let t116;
-    	let td48;
-    	let t118;
-    	let td49;
-    	let t120;
-    	let tr11;
-    	let td50;
-    	let t122;
-    	let td51;
-    	let t124;
-    	let td52;
-    	let t126;
-    	let td53;
-    	let t128;
-    	let td54;
-    	let t130;
-    	let tr12;
-    	let td55;
-    	let t132;
-    	let td56;
-    	let t134;
-    	let td57;
-    	let t136;
-    	let td58;
-    	let t138;
-    	let td59;
-    	let t140;
-    	let tr13;
-    	let td60;
-    	let t142;
-    	let td61;
-    	let t144;
-    	let td62;
-    	let t146;
-    	let td63;
-    	let t148;
-    	let td64;
-    	let t150;
-    	let tr14;
-    	let td65;
-    	let t152;
-    	let td66;
-    	let t154;
-    	let td67;
-    	let t156;
-    	let td68;
-    	let t158;
-    	let td69;
-    	let t160;
-    	let tr15;
-    	let td70;
-    	let t162;
-    	let td71;
-    	let t164;
-    	let td72;
-    	let t166;
-    	let td73;
-    	let t168;
-    	let td74;
-    	let t170;
-    	let tr16;
-    	let td75;
-    	let t172;
-    	let td76;
-    	let t174;
-    	let td77;
-    	let t176;
-    	let td78;
-    	let t178;
-    	let td79;
-    	let t180;
+    	let t2;
     	let nav;
-    	let div4;
+    	let div1;
     	let ul0;
     	let li0;
     	let a0;
-    	let svg1;
+    	let svg0;
     	let path0;
     	let polyline0;
-    	let t181;
-    	let t182;
+    	let t3;
+    	let t4;
     	let li1;
     	let a1;
-    	let svg2;
+    	let svg1;
     	let path1;
     	let polyline1;
-    	let t183;
-    	let t184;
+    	let t5;
+    	let t6;
     	let li2;
     	let a2;
-    	let svg3;
+    	let svg2;
     	let circle0;
     	let circle1;
     	let path2;
-    	let t185;
-    	let t186;
+    	let t7;
+    	let t8;
     	let li3;
     	let a3;
-    	let svg4;
+    	let svg3;
     	let path3;
     	let circle2;
     	let path4;
     	let path5;
-    	let t187;
-    	let t188;
+    	let t9;
+    	let t10;
     	let li4;
     	let a4;
-    	let svg5;
-    	let line3;
-    	let line4;
-    	let line5;
-    	let t189;
-    	let t190;
+    	let svg4;
+    	let line0;
+    	let line1;
+    	let line2;
+    	let t11;
+    	let t12;
     	let li5;
     	let a5;
-    	let svg6;
+    	let svg5;
     	let polygon;
     	let polyline2;
     	let polyline3;
-    	let t191;
-    	let t192;
+    	let t13;
+    	let t14;
     	let h6;
     	let span;
-    	let t194;
+    	let t16;
     	let a6;
-    	let svg7;
+    	let svg6;
     	let circle3;
-    	let line6;
-    	let line7;
-    	let t195;
+    	let line3;
+    	let line4;
+    	let t17;
     	let ul1;
     	let li6;
     	let a7;
-    	let svg8;
+    	let svg7;
     	let path6;
     	let polyline4;
-    	let line8;
-    	let line9;
+    	let line5;
+    	let line6;
     	let polyline5;
-    	let t196;
-    	let t197;
+    	let t18;
+    	let t19;
     	let li7;
     	let a8;
-    	let svg9;
+    	let svg8;
     	let path7;
     	let polyline6;
-    	let line10;
-    	let line11;
+    	let line7;
+    	let line8;
     	let polyline7;
-    	let t198;
-    	let t199;
+    	let t20;
+    	let t21;
     	let li8;
     	let a9;
-    	let svg10;
+    	let svg9;
     	let path8;
     	let polyline8;
-    	let line12;
-    	let line13;
+    	let line9;
+    	let line10;
     	let polyline9;
-    	let t200;
-    	let t201;
+    	let t22;
+    	let t23;
     	let li9;
     	let a10;
-    	let svg11;
+    	let svg10;
     	let path9;
     	let polyline10;
-    	let line14;
-    	let line15;
+    	let line11;
+    	let line12;
     	let polyline11;
-    	let t202;
+    	let t24;
+    	let div3_intro;
     	let current;
     	timer = new Timer({ $$inline: true });
 
     	const block = {
     		c: function create() {
-    			div6 = element("div");
-    			div5 = element("div");
-    			main = element("main");
-    			div2 = element("div");
-    			h1 = element("h1");
-    			h1.textContent = "Dashboard";
-    			t1 = space();
-    			div1 = element("div");
-    			div0 = element("div");
-    			button0 = element("button");
-    			button0.textContent = "Share";
-    			t3 = space();
-    			button1 = element("button");
-    			button1.textContent = "Export";
-    			t5 = space();
-    			button2 = element("button");
-    			svg0 = svg_element("svg");
-    			rect = svg_element("rect");
-    			line0 = svg_element("line");
-    			line1 = svg_element("line");
-    			line2 = svg_element("line");
-    			t6 = text("\n            This week");
-    			t7 = space();
-    			create_component(timer.$$.fragment);
-    			t8 = space();
-    			h2 = element("h2");
-    			h2.textContent = "Section title";
-    			t10 = space();
     			div3 = element("div");
-    			table = element("table");
-    			thead = element("thead");
-    			tr0 = element("tr");
-    			th0 = element("th");
-    			th0.textContent = "#";
-    			t12 = space();
-    			th1 = element("th");
-    			th1.textContent = "Header";
-    			t14 = space();
-    			th2 = element("th");
-    			th2.textContent = "Header";
-    			t16 = space();
-    			th3 = element("th");
-    			th3.textContent = "Header";
-    			t18 = space();
-    			th4 = element("th");
-    			th4.textContent = "Header";
-    			t20 = space();
-    			tbody = element("tbody");
-    			tr1 = element("tr");
-    			td0 = element("td");
-    			td0.textContent = "1,001";
-    			t22 = space();
-    			td1 = element("td");
-    			td1.textContent = "Lorem";
-    			t24 = space();
-    			td2 = element("td");
-    			td2.textContent = "ipsum";
-    			t26 = space();
-    			td3 = element("td");
-    			td3.textContent = "dolor";
-    			t28 = space();
-    			td4 = element("td");
-    			td4.textContent = "sit";
-    			t30 = space();
-    			tr2 = element("tr");
-    			td5 = element("td");
-    			td5.textContent = "1,002";
-    			t32 = space();
-    			td6 = element("td");
-    			td6.textContent = "amet";
-    			t34 = space();
-    			td7 = element("td");
-    			td7.textContent = "consectetur";
-    			t36 = space();
-    			td8 = element("td");
-    			td8.textContent = "adipiscing";
-    			t38 = space();
-    			td9 = element("td");
-    			td9.textContent = "elit";
-    			t40 = space();
-    			tr3 = element("tr");
-    			td10 = element("td");
-    			td10.textContent = "1,003";
-    			t42 = space();
-    			td11 = element("td");
-    			td11.textContent = "Integer";
-    			t44 = space();
-    			td12 = element("td");
-    			td12.textContent = "nec";
-    			t46 = space();
-    			td13 = element("td");
-    			td13.textContent = "odio";
-    			t48 = space();
-    			td14 = element("td");
-    			td14.textContent = "Praesent";
-    			t50 = space();
-    			tr4 = element("tr");
-    			td15 = element("td");
-    			td15.textContent = "1,003";
-    			t52 = space();
-    			td16 = element("td");
-    			td16.textContent = "libero";
-    			t54 = space();
-    			td17 = element("td");
-    			td17.textContent = "Sed";
-    			t56 = space();
-    			td18 = element("td");
-    			td18.textContent = "cursus";
-    			t58 = space();
-    			td19 = element("td");
-    			td19.textContent = "ante";
-    			t60 = space();
-    			tr5 = element("tr");
-    			td20 = element("td");
-    			td20.textContent = "1,004";
-    			t62 = space();
-    			td21 = element("td");
-    			td21.textContent = "dapibus";
-    			t64 = space();
-    			td22 = element("td");
-    			td22.textContent = "diam";
-    			t66 = space();
-    			td23 = element("td");
-    			td23.textContent = "Sed";
-    			t68 = space();
-    			td24 = element("td");
-    			td24.textContent = "nisi";
-    			t70 = space();
-    			tr6 = element("tr");
-    			td25 = element("td");
-    			td25.textContent = "1,005";
-    			t72 = space();
-    			td26 = element("td");
-    			td26.textContent = "Nulla";
-    			t74 = space();
-    			td27 = element("td");
-    			td27.textContent = "quis";
-    			t76 = space();
-    			td28 = element("td");
-    			td28.textContent = "sem";
-    			t78 = space();
-    			td29 = element("td");
-    			td29.textContent = "at";
-    			t80 = space();
-    			tr7 = element("tr");
-    			td30 = element("td");
-    			td30.textContent = "1,006";
-    			t82 = space();
-    			td31 = element("td");
-    			td31.textContent = "nibh";
-    			t84 = space();
-    			td32 = element("td");
-    			td32.textContent = "elementum";
-    			t86 = space();
-    			td33 = element("td");
-    			td33.textContent = "imperdiet";
-    			t88 = space();
-    			td34 = element("td");
-    			td34.textContent = "Duis";
-    			t90 = space();
-    			tr8 = element("tr");
-    			td35 = element("td");
-    			td35.textContent = "1,007";
-    			t92 = space();
-    			td36 = element("td");
-    			td36.textContent = "sagittis";
-    			t94 = space();
-    			td37 = element("td");
-    			td37.textContent = "ipsum";
-    			t96 = space();
-    			td38 = element("td");
-    			td38.textContent = "Praesent";
-    			t98 = space();
-    			td39 = element("td");
-    			td39.textContent = "mauris";
-    			t100 = space();
-    			tr9 = element("tr");
-    			td40 = element("td");
-    			td40.textContent = "1,008";
-    			t102 = space();
-    			td41 = element("td");
-    			td41.textContent = "Fusce";
-    			t104 = space();
-    			td42 = element("td");
-    			td42.textContent = "nec";
-    			t106 = space();
-    			td43 = element("td");
-    			td43.textContent = "tellus";
-    			t108 = space();
-    			td44 = element("td");
-    			td44.textContent = "sed";
-    			t110 = space();
-    			tr10 = element("tr");
-    			td45 = element("td");
-    			td45.textContent = "1,009";
-    			t112 = space();
-    			td46 = element("td");
-    			td46.textContent = "augue";
-    			t114 = space();
-    			td47 = element("td");
-    			td47.textContent = "semper";
-    			t116 = space();
-    			td48 = element("td");
-    			td48.textContent = "porta";
-    			t118 = space();
-    			td49 = element("td");
-    			td49.textContent = "Mauris";
-    			t120 = space();
-    			tr11 = element("tr");
-    			td50 = element("td");
-    			td50.textContent = "1,010";
-    			t122 = space();
-    			td51 = element("td");
-    			td51.textContent = "massa";
-    			t124 = space();
-    			td52 = element("td");
-    			td52.textContent = "Vestibulum";
-    			t126 = space();
-    			td53 = element("td");
-    			td53.textContent = "lacinia";
-    			t128 = space();
-    			td54 = element("td");
-    			td54.textContent = "arcu";
-    			t130 = space();
-    			tr12 = element("tr");
-    			td55 = element("td");
-    			td55.textContent = "1,011";
-    			t132 = space();
-    			td56 = element("td");
-    			td56.textContent = "eget";
-    			t134 = space();
-    			td57 = element("td");
-    			td57.textContent = "nulla";
-    			t136 = space();
-    			td58 = element("td");
-    			td58.textContent = "Class";
-    			t138 = space();
-    			td59 = element("td");
-    			td59.textContent = "aptent";
-    			t140 = space();
-    			tr13 = element("tr");
-    			td60 = element("td");
-    			td60.textContent = "1,012";
-    			t142 = space();
-    			td61 = element("td");
-    			td61.textContent = "taciti";
-    			t144 = space();
-    			td62 = element("td");
-    			td62.textContent = "sociosqu";
-    			t146 = space();
-    			td63 = element("td");
-    			td63.textContent = "ad";
-    			t148 = space();
-    			td64 = element("td");
-    			td64.textContent = "litora";
-    			t150 = space();
-    			tr14 = element("tr");
-    			td65 = element("td");
-    			td65.textContent = "1,013";
-    			t152 = space();
-    			td66 = element("td");
-    			td66.textContent = "torquent";
-    			t154 = space();
-    			td67 = element("td");
-    			td67.textContent = "per";
-    			t156 = space();
-    			td68 = element("td");
-    			td68.textContent = "conubia";
-    			t158 = space();
-    			td69 = element("td");
-    			td69.textContent = "nostra";
-    			t160 = space();
-    			tr15 = element("tr");
-    			td70 = element("td");
-    			td70.textContent = "1,014";
-    			t162 = space();
-    			td71 = element("td");
-    			td71.textContent = "per";
-    			t164 = space();
-    			td72 = element("td");
-    			td72.textContent = "inceptos";
-    			t166 = space();
-    			td73 = element("td");
-    			td73.textContent = "himenaeos";
-    			t168 = space();
-    			td74 = element("td");
-    			td74.textContent = "Curabitur";
-    			t170 = space();
-    			tr16 = element("tr");
-    			td75 = element("td");
-    			td75.textContent = "1,015";
-    			t172 = space();
-    			td76 = element("td");
-    			td76.textContent = "sodales";
-    			t174 = space();
-    			td77 = element("td");
-    			td77.textContent = "ligula";
-    			t176 = space();
-    			td78 = element("td");
-    			td78.textContent = "in";
-    			t178 = space();
-    			td79 = element("td");
-    			td79.textContent = "libero";
-    			t180 = space();
+    			div2 = element("div");
+    			main = element("main");
+    			div0 = element("div");
+    			h1 = element("h1");
+    			h1.textContent = "Scramble";
+    			t1 = space();
+    			create_component(timer.$$.fragment);
+    			t2 = space();
     			nav = element("nav");
-    			div4 = element("div");
+    			div1 = element("div");
     			ul0 = element("ul");
     			li0 = element("li");
     			a0 = element("a");
-    			svg1 = svg_element("svg");
+    			svg0 = svg_element("svg");
     			path0 = svg_element("path");
     			polyline0 = svg_element("polyline");
-    			t181 = text("\n              Dashboard");
-    			t182 = space();
+    			t3 = text("\n              Dashboard");
+    			t4 = space();
     			li1 = element("li");
     			a1 = element("a");
-    			svg2 = svg_element("svg");
+    			svg1 = svg_element("svg");
     			path1 = svg_element("path");
     			polyline1 = svg_element("polyline");
-    			t183 = text("\n              Orders");
-    			t184 = space();
+    			t5 = text("\n              Orders");
+    			t6 = space();
     			li2 = element("li");
     			a2 = element("a");
-    			svg3 = svg_element("svg");
+    			svg2 = svg_element("svg");
     			circle0 = svg_element("circle");
     			circle1 = svg_element("circle");
     			path2 = svg_element("path");
-    			t185 = text("\n              Products");
-    			t186 = space();
+    			t7 = text("\n              Products");
+    			t8 = space();
     			li3 = element("li");
     			a3 = element("a");
-    			svg4 = svg_element("svg");
+    			svg3 = svg_element("svg");
     			path3 = svg_element("path");
     			circle2 = svg_element("circle");
     			path4 = svg_element("path");
     			path5 = svg_element("path");
-    			t187 = text("\n              Customers");
-    			t188 = space();
+    			t9 = text("\n              Customers");
+    			t10 = space();
     			li4 = element("li");
     			a4 = element("a");
-    			svg5 = svg_element("svg");
-    			line3 = svg_element("line");
-    			line4 = svg_element("line");
-    			line5 = svg_element("line");
-    			t189 = text("\n              Reports");
-    			t190 = space();
+    			svg4 = svg_element("svg");
+    			line0 = svg_element("line");
+    			line1 = svg_element("line");
+    			line2 = svg_element("line");
+    			t11 = text("\n              Reports");
+    			t12 = space();
     			li5 = element("li");
     			a5 = element("a");
-    			svg6 = svg_element("svg");
+    			svg5 = svg_element("svg");
     			polygon = svg_element("polygon");
     			polyline2 = svg_element("polyline");
     			polyline3 = svg_element("polyline");
-    			t191 = text("\n              Integrations");
-    			t192 = space();
+    			t13 = text("\n              Integrations");
+    			t14 = space();
     			h6 = element("h6");
     			span = element("span");
     			span.textContent = "Saved reports";
-    			t194 = space();
+    			t16 = space();
     			a6 = element("a");
-    			svg7 = svg_element("svg");
+    			svg6 = svg_element("svg");
     			circle3 = svg_element("circle");
-    			line6 = svg_element("line");
-    			line7 = svg_element("line");
-    			t195 = space();
+    			line3 = svg_element("line");
+    			line4 = svg_element("line");
+    			t17 = space();
     			ul1 = element("ul");
     			li6 = element("li");
     			a7 = element("a");
-    			svg8 = svg_element("svg");
+    			svg7 = svg_element("svg");
     			path6 = svg_element("path");
     			polyline4 = svg_element("polyline");
-    			line8 = svg_element("line");
-    			line9 = svg_element("line");
+    			line5 = svg_element("line");
+    			line6 = svg_element("line");
     			polyline5 = svg_element("polyline");
-    			t196 = text("\n              Current month");
-    			t197 = space();
+    			t18 = text("\n              Current month");
+    			t19 = space();
     			li7 = element("li");
     			a8 = element("a");
-    			svg9 = svg_element("svg");
+    			svg8 = svg_element("svg");
     			path7 = svg_element("path");
     			polyline6 = svg_element("polyline");
-    			line10 = svg_element("line");
-    			line11 = svg_element("line");
+    			line7 = svg_element("line");
+    			line8 = svg_element("line");
     			polyline7 = svg_element("polyline");
-    			t198 = text("\n              Last quarter");
-    			t199 = space();
+    			t20 = text("\n              Last quarter");
+    			t21 = space();
     			li8 = element("li");
     			a9 = element("a");
-    			svg10 = svg_element("svg");
+    			svg9 = svg_element("svg");
     			path8 = svg_element("path");
     			polyline8 = svg_element("polyline");
-    			line12 = svg_element("line");
-    			line13 = svg_element("line");
+    			line9 = svg_element("line");
+    			line10 = svg_element("line");
     			polyline9 = svg_element("polyline");
-    			t200 = text("\n              Social engagement");
-    			t201 = space();
+    			t22 = text("\n              Social engagement");
+    			t23 = space();
     			li9 = element("li");
     			a10 = element("a");
-    			svg11 = svg_element("svg");
+    			svg10 = svg_element("svg");
     			path9 = svg_element("path");
     			polyline10 = svg_element("polyline");
-    			line14 = svg_element("line");
-    			line15 = svg_element("line");
+    			line11 = svg_element("line");
+    			line12 = svg_element("line");
     			polyline11 = svg_element("polyline");
-    			t202 = text("\n              Year-end sale");
-    			attr_dev(h1, "class", "h2");
-    			add_location(h1, file$4, 11, 8, 333);
-    			attr_dev(button0, "type", "button");
-    			attr_dev(button0, "class", "btn btn-sm btn-outline-secondary");
-    			add_location(button0, file$4, 14, 12, 461);
-    			attr_dev(button1, "type", "button");
-    			attr_dev(button1, "class", "btn btn-sm btn-outline-secondary");
-    			add_location(button1, file$4, 17, 12, 579);
-    			attr_dev(div0, "class", "btn-group mr-2");
-    			add_location(div0, file$4, 13, 10, 420);
-    			attr_dev(rect, "x", "3");
-    			attr_dev(rect, "y", "4");
-    			attr_dev(rect, "width", "18");
-    			attr_dev(rect, "height", "18");
-    			attr_dev(rect, "rx", "2");
-    			attr_dev(rect, "ry", "2");
-    			add_location(rect, file$4, 34, 47, 1183);
-    			attr_dev(line0, "x1", "16");
-    			attr_dev(line0, "y1", "2");
-    			attr_dev(line0, "x2", "16");
-    			attr_dev(line0, "y2", "6");
-    			add_location(line0, file$4, 41, 14, 1351);
-    			attr_dev(line1, "x1", "8");
-    			attr_dev(line1, "y1", "2");
-    			attr_dev(line1, "x2", "8");
-    			attr_dev(line1, "y2", "6");
-    			add_location(line1, file$4, 42, 14, 1404);
-    			attr_dev(line2, "x1", "3");
-    			attr_dev(line2, "y1", "10");
-    			attr_dev(line2, "x2", "21");
-    			attr_dev(line2, "y2", "10");
-    			add_location(line2, file$4, 43, 14, 1455);
+    			t24 = text("\n              Year-end sale");
+    			attr_dev(h1, "class", "h1 text-center");
+    			add_location(h1, file$4, 12, 8, 281);
+    			attr_dev(div0, "class", "pt-3 pb-2 mb-3");
+    			add_location(div0, file$4, 11, 6, 244);
+    			attr_dev(main, "class", "container");
+    			add_location(main, file$4, 10, 4, 213);
+    			attr_dev(path0, "d", "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z");
+    			add_location(path0, file$4, 34, 45, 1029);
+    			attr_dev(polyline0, "points", "9 22 9 12 15 12 15 22");
+    			add_location(polyline0, file$4, 36, 16, 1123);
     			attr_dev(svg0, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg0, "width", "24");
     			attr_dev(svg0, "height", "24");
@@ -2580,130 +1886,18 @@ var app = (function () {
     			attr_dev(svg0, "stroke-width", "2");
     			attr_dev(svg0, "stroke-linecap", "round");
     			attr_dev(svg0, "stroke-linejoin", "round");
-    			attr_dev(svg0, "class", "feather feather-calendar");
-    			add_location(svg0, file$4, 24, 12, 829);
-    			attr_dev(button2, "type", "button");
-    			attr_dev(button2, "class", "btn btn-sm btn-outline-secondary dropdown-toggle");
-    			add_location(button2, file$4, 21, 10, 713);
-    			attr_dev(div1, "class", "btn-toolbar mb-2 mb-md-0");
-    			add_location(div1, file$4, 12, 8, 371);
-    			attr_dev(div2, "class", "d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom");
-    			add_location(div2, file$4, 9, 6, 199);
-    			add_location(h2, file$4, 51, 6, 1595);
-    			add_location(th0, file$4, 56, 14, 1757);
-    			add_location(th1, file$4, 57, 14, 1782);
-    			add_location(th2, file$4, 58, 14, 1812);
-    			add_location(th3, file$4, 59, 14, 1842);
-    			add_location(th4, file$4, 60, 14, 1872);
-    			add_location(tr0, file$4, 55, 12, 1738);
-    			add_location(thead, file$4, 54, 10, 1718);
-    			add_location(td0, file$4, 65, 14, 1974);
-    			add_location(td1, file$4, 66, 14, 2003);
-    			add_location(td2, file$4, 67, 14, 2032);
-    			add_location(td3, file$4, 68, 14, 2061);
-    			add_location(td4, file$4, 69, 14, 2090);
-    			add_location(tr1, file$4, 64, 12, 1955);
-    			add_location(td5, file$4, 72, 14, 2152);
-    			add_location(td6, file$4, 73, 14, 2181);
-    			add_location(td7, file$4, 74, 14, 2209);
-    			add_location(td8, file$4, 75, 14, 2244);
-    			add_location(td9, file$4, 76, 14, 2278);
-    			add_location(tr2, file$4, 71, 12, 2133);
-    			add_location(td10, file$4, 79, 14, 2341);
-    			add_location(td11, file$4, 80, 14, 2370);
-    			add_location(td12, file$4, 81, 14, 2401);
-    			add_location(td13, file$4, 82, 14, 2428);
-    			add_location(td14, file$4, 83, 14, 2456);
-    			add_location(tr3, file$4, 78, 12, 2322);
-    			add_location(td15, file$4, 86, 14, 2523);
-    			add_location(td16, file$4, 87, 14, 2552);
-    			add_location(td17, file$4, 88, 14, 2582);
-    			add_location(td18, file$4, 89, 14, 2609);
-    			add_location(td19, file$4, 90, 14, 2639);
-    			add_location(tr4, file$4, 85, 12, 2504);
-    			add_location(td20, file$4, 93, 14, 2702);
-    			add_location(td21, file$4, 94, 14, 2731);
-    			add_location(td22, file$4, 95, 14, 2762);
-    			add_location(td23, file$4, 96, 14, 2790);
-    			add_location(td24, file$4, 97, 14, 2817);
-    			add_location(tr5, file$4, 92, 12, 2683);
-    			add_location(td25, file$4, 100, 14, 2880);
-    			add_location(td26, file$4, 101, 14, 2909);
-    			add_location(td27, file$4, 102, 14, 2938);
-    			add_location(td28, file$4, 103, 14, 2966);
-    			add_location(td29, file$4, 104, 14, 2993);
-    			add_location(tr6, file$4, 99, 12, 2861);
-    			add_location(td30, file$4, 107, 14, 3054);
-    			add_location(td31, file$4, 108, 14, 3083);
-    			add_location(td32, file$4, 109, 14, 3111);
-    			add_location(td33, file$4, 110, 14, 3144);
-    			add_location(td34, file$4, 111, 14, 3177);
-    			add_location(tr7, file$4, 106, 12, 3035);
-    			add_location(td35, file$4, 114, 14, 3240);
-    			add_location(td36, file$4, 115, 14, 3269);
-    			add_location(td37, file$4, 116, 14, 3301);
-    			add_location(td38, file$4, 117, 14, 3330);
-    			add_location(td39, file$4, 118, 14, 3362);
-    			add_location(tr8, file$4, 113, 12, 3221);
-    			add_location(td40, file$4, 121, 14, 3427);
-    			add_location(td41, file$4, 122, 14, 3456);
-    			add_location(td42, file$4, 123, 14, 3485);
-    			add_location(td43, file$4, 124, 14, 3512);
-    			add_location(td44, file$4, 125, 14, 3542);
-    			add_location(tr9, file$4, 120, 12, 3408);
-    			add_location(td45, file$4, 128, 14, 3604);
-    			add_location(td46, file$4, 129, 14, 3633);
-    			add_location(td47, file$4, 130, 14, 3662);
-    			add_location(td48, file$4, 131, 14, 3692);
-    			add_location(td49, file$4, 132, 14, 3721);
-    			add_location(tr10, file$4, 127, 12, 3585);
-    			add_location(td50, file$4, 135, 14, 3786);
-    			add_location(td51, file$4, 136, 14, 3815);
-    			add_location(td52, file$4, 137, 14, 3844);
-    			add_location(td53, file$4, 138, 14, 3878);
-    			add_location(td54, file$4, 139, 14, 3909);
-    			add_location(tr11, file$4, 134, 12, 3767);
-    			add_location(td55, file$4, 142, 14, 3972);
-    			add_location(td56, file$4, 143, 14, 4001);
-    			add_location(td57, file$4, 144, 14, 4029);
-    			add_location(td58, file$4, 145, 14, 4058);
-    			add_location(td59, file$4, 146, 14, 4087);
-    			add_location(tr12, file$4, 141, 12, 3953);
-    			add_location(td60, file$4, 149, 14, 4152);
-    			add_location(td61, file$4, 150, 14, 4181);
-    			add_location(td62, file$4, 151, 14, 4211);
-    			add_location(td63, file$4, 152, 14, 4243);
-    			add_location(td64, file$4, 153, 14, 4269);
-    			add_location(tr13, file$4, 148, 12, 4133);
-    			add_location(td65, file$4, 156, 14, 4334);
-    			add_location(td66, file$4, 157, 14, 4363);
-    			add_location(td67, file$4, 158, 14, 4395);
-    			add_location(td68, file$4, 159, 14, 4422);
-    			add_location(td69, file$4, 160, 14, 4453);
-    			add_location(tr14, file$4, 155, 12, 4315);
-    			add_location(td70, file$4, 163, 14, 4518);
-    			add_location(td71, file$4, 164, 14, 4547);
-    			add_location(td72, file$4, 165, 14, 4574);
-    			add_location(td73, file$4, 166, 14, 4606);
-    			add_location(td74, file$4, 167, 14, 4639);
-    			add_location(tr15, file$4, 162, 12, 4499);
-    			add_location(td75, file$4, 170, 14, 4707);
-    			add_location(td76, file$4, 171, 14, 4736);
-    			add_location(td77, file$4, 172, 14, 4767);
-    			add_location(td78, file$4, 173, 14, 4797);
-    			add_location(td79, file$4, 174, 14, 4823);
-    			add_location(tr16, file$4, 169, 12, 4688);
-    			add_location(tbody, file$4, 63, 10, 1935);
-    			attr_dev(table, "class", "table table-striped table-sm");
-    			add_location(table, file$4, 53, 8, 1663);
-    			attr_dev(div3, "class", "table-responsive");
-    			add_location(div3, file$4, 52, 6, 1624);
-    			attr_dev(main, "class", "col-md-9 ml-sm-auto col-lg-10 px-md-4");
-    			add_location(main, file$4, 8, 4, 140);
-    			attr_dev(path0, "d", "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z");
-    			add_location(path0, file$4, 197, 45, 5583);
-    			attr_dev(polyline0, "points", "9 22 9 12 15 12 15 22");
-    			add_location(polyline0, file$4, 199, 16, 5677);
+    			attr_dev(svg0, "class", "feather feather-home");
+    			add_location(svg0, file$4, 24, 14, 659);
+    			attr_dev(a0, "class", "nav-link active");
+    			attr_dev(a0, "aria-current", "page");
+    			attr_dev(a0, "href", "#");
+    			add_location(a0, file$4, 23, 12, 588);
+    			attr_dev(li0, "class", "nav-item");
+    			add_location(li0, file$4, 22, 10, 554);
+    			attr_dev(path1, "d", "M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z");
+    			add_location(path1, file$4, 52, 45, 1688);
+    			attr_dev(polyline1, "points", "13 2 13 9 20 9");
+    			add_location(polyline1, file$4, 54, 16, 1794);
     			attr_dev(svg1, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg1, "width", "24");
     			attr_dev(svg1, "height", "24");
@@ -2713,18 +1907,23 @@ var app = (function () {
     			attr_dev(svg1, "stroke-width", "2");
     			attr_dev(svg1, "stroke-linecap", "round");
     			attr_dev(svg1, "stroke-linejoin", "round");
-    			attr_dev(svg1, "class", "feather feather-home");
-    			add_location(svg1, file$4, 187, 14, 5213);
-    			attr_dev(a0, "class", "nav-link active");
-    			attr_dev(a0, "aria-current", "page");
-    			attr_dev(a0, "href", "#");
-    			add_location(a0, file$4, 186, 12, 5142);
-    			attr_dev(li0, "class", "nav-item");
-    			add_location(li0, file$4, 185, 10, 5108);
-    			attr_dev(path1, "d", "M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z");
-    			add_location(path1, file$4, 215, 45, 6242);
-    			attr_dev(polyline1, "points", "13 2 13 9 20 9");
-    			add_location(polyline1, file$4, 217, 16, 6348);
+    			attr_dev(svg1, "class", "feather feather-file");
+    			add_location(svg1, file$4, 42, 14, 1318);
+    			attr_dev(a1, "class", "nav-link");
+    			attr_dev(a1, "href", "#");
+    			add_location(a1, file$4, 41, 12, 1274);
+    			attr_dev(li1, "class", "nav-item");
+    			add_location(li1, file$4, 40, 10, 1240);
+    			attr_dev(circle0, "cx", "9");
+    			attr_dev(circle0, "cy", "21");
+    			attr_dev(circle0, "r", "1");
+    			add_location(circle0, file$4, 70, 54, 2358);
+    			attr_dev(circle1, "cx", "20");
+    			attr_dev(circle1, "cy", "21");
+    			attr_dev(circle1, "r", "1");
+    			add_location(circle1, file$4, 74, 16, 2460);
+    			attr_dev(path2, "d", "M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6");
+    			add_location(path2, file$4, 75, 16, 2509);
     			attr_dev(svg2, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg2, "width", "24");
     			attr_dev(svg2, "height", "24");
@@ -2734,23 +1933,23 @@ var app = (function () {
     			attr_dev(svg2, "stroke-width", "2");
     			attr_dev(svg2, "stroke-linecap", "round");
     			attr_dev(svg2, "stroke-linejoin", "round");
-    			attr_dev(svg2, "class", "feather feather-file");
-    			add_location(svg2, file$4, 205, 14, 5872);
-    			attr_dev(a1, "class", "nav-link");
-    			attr_dev(a1, "href", "#");
-    			add_location(a1, file$4, 204, 12, 5828);
-    			attr_dev(li1, "class", "nav-item");
-    			add_location(li1, file$4, 203, 10, 5794);
-    			attr_dev(circle0, "cx", "9");
-    			attr_dev(circle0, "cy", "21");
-    			attr_dev(circle0, "r", "1");
-    			add_location(circle0, file$4, 233, 54, 6912);
-    			attr_dev(circle1, "cx", "20");
-    			attr_dev(circle1, "cy", "21");
-    			attr_dev(circle1, "r", "1");
-    			add_location(circle1, file$4, 237, 16, 7014);
-    			attr_dev(path2, "d", "M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6");
-    			add_location(path2, file$4, 238, 16, 7063);
+    			attr_dev(svg2, "class", "feather feather-shopping-cart");
+    			add_location(svg2, file$4, 60, 14, 1979);
+    			attr_dev(a2, "class", "nav-link");
+    			attr_dev(a2, "href", "#");
+    			add_location(a2, file$4, 59, 12, 1935);
+    			attr_dev(li2, "class", "nav-item");
+    			add_location(li2, file$4, 58, 10, 1901);
+    			attr_dev(path3, "d", "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2");
+    			add_location(path3, file$4, 92, 46, 3125);
+    			attr_dev(circle2, "cx", "9");
+    			attr_dev(circle2, "cy", "7");
+    			attr_dev(circle2, "r", "4");
+    			add_location(circle2, file$4, 94, 16, 3214);
+    			attr_dev(path4, "d", "M23 21v-2a4 4 0 0 0-3-3.87");
+    			add_location(path4, file$4, 95, 16, 3261);
+    			attr_dev(path5, "d", "M16 3.13a4 4 0 0 1 0 7.75");
+    			add_location(path5, file$4, 96, 16, 3317);
     			attr_dev(svg3, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg3, "width", "24");
     			attr_dev(svg3, "height", "24");
@@ -2760,23 +1959,28 @@ var app = (function () {
     			attr_dev(svg3, "stroke-width", "2");
     			attr_dev(svg3, "stroke-linecap", "round");
     			attr_dev(svg3, "stroke-linejoin", "round");
-    			attr_dev(svg3, "class", "feather feather-shopping-cart");
-    			add_location(svg3, file$4, 223, 14, 6533);
-    			attr_dev(a2, "class", "nav-link");
-    			attr_dev(a2, "href", "#");
-    			add_location(a2, file$4, 222, 12, 6489);
-    			attr_dev(li2, "class", "nav-item");
-    			add_location(li2, file$4, 221, 10, 6455);
-    			attr_dev(path3, "d", "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2");
-    			add_location(path3, file$4, 255, 46, 7679);
-    			attr_dev(circle2, "cx", "9");
-    			attr_dev(circle2, "cy", "7");
-    			attr_dev(circle2, "r", "4");
-    			add_location(circle2, file$4, 257, 16, 7768);
-    			attr_dev(path4, "d", "M23 21v-2a4 4 0 0 0-3-3.87");
-    			add_location(path4, file$4, 258, 16, 7815);
-    			attr_dev(path5, "d", "M16 3.13a4 4 0 0 1 0 7.75");
-    			add_location(path5, file$4, 259, 16, 7871);
+    			attr_dev(svg3, "class", "feather feather-users");
+    			add_location(svg3, file$4, 82, 14, 2754);
+    			attr_dev(a3, "class", "nav-link");
+    			attr_dev(a3, "href", "#");
+    			add_location(a3, file$4, 81, 12, 2710);
+    			attr_dev(li3, "class", "nav-item");
+    			add_location(li3, file$4, 80, 10, 2676);
+    			attr_dev(line0, "x1", "18");
+    			attr_dev(line0, "y1", "20");
+    			attr_dev(line0, "x2", "18");
+    			attr_dev(line0, "y2", "10");
+    			add_location(line0, file$4, 112, 52, 3884);
+    			attr_dev(line1, "x1", "12");
+    			attr_dev(line1, "y1", "20");
+    			attr_dev(line1, "x2", "12");
+    			attr_dev(line1, "y2", "4");
+    			add_location(line1, file$4, 117, 16, 4013);
+    			attr_dev(line2, "x1", "6");
+    			attr_dev(line2, "y1", "20");
+    			attr_dev(line2, "x2", "6");
+    			attr_dev(line2, "y2", "14");
+    			add_location(line2, file$4, 118, 16, 4069);
     			attr_dev(svg4, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg4, "width", "24");
     			attr_dev(svg4, "height", "24");
@@ -2786,28 +1990,19 @@ var app = (function () {
     			attr_dev(svg4, "stroke-width", "2");
     			attr_dev(svg4, "stroke-linecap", "round");
     			attr_dev(svg4, "stroke-linejoin", "round");
-    			attr_dev(svg4, "class", "feather feather-users");
-    			add_location(svg4, file$4, 245, 14, 7308);
-    			attr_dev(a3, "class", "nav-link");
-    			attr_dev(a3, "href", "#");
-    			add_location(a3, file$4, 244, 12, 7264);
-    			attr_dev(li3, "class", "nav-item");
-    			add_location(li3, file$4, 243, 10, 7230);
-    			attr_dev(line3, "x1", "18");
-    			attr_dev(line3, "y1", "20");
-    			attr_dev(line3, "x2", "18");
-    			attr_dev(line3, "y2", "10");
-    			add_location(line3, file$4, 275, 52, 8438);
-    			attr_dev(line4, "x1", "12");
-    			attr_dev(line4, "y1", "20");
-    			attr_dev(line4, "x2", "12");
-    			attr_dev(line4, "y2", "4");
-    			add_location(line4, file$4, 280, 16, 8567);
-    			attr_dev(line5, "x1", "6");
-    			attr_dev(line5, "y1", "20");
-    			attr_dev(line5, "x2", "6");
-    			attr_dev(line5, "y2", "14");
-    			add_location(line5, file$4, 281, 16, 8623);
+    			attr_dev(svg4, "class", "feather feather-bar-chart-2");
+    			add_location(svg4, file$4, 102, 14, 3507);
+    			attr_dev(a4, "class", "nav-link");
+    			attr_dev(a4, "href", "#");
+    			add_location(a4, file$4, 101, 12, 3463);
+    			attr_dev(li4, "class", "nav-item");
+    			add_location(li4, file$4, 100, 10, 3429);
+    			attr_dev(polygon, "points", "12 2 2 7 12 12 22 7 12 2");
+    			add_location(polygon, file$4, 134, 47, 4629);
+    			attr_dev(polyline2, "points", "2 17 12 22 22 17");
+    			add_location(polyline2, file$4, 136, 16, 4709);
+    			attr_dev(polyline3, "points", "2 12 12 17 22 12");
+    			add_location(polyline3, file$4, 137, 16, 4764);
     			attr_dev(svg5, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg5, "width", "24");
     			attr_dev(svg5, "height", "24");
@@ -2817,19 +2012,30 @@ var app = (function () {
     			attr_dev(svg5, "stroke-width", "2");
     			attr_dev(svg5, "stroke-linecap", "round");
     			attr_dev(svg5, "stroke-linejoin", "round");
-    			attr_dev(svg5, "class", "feather feather-bar-chart-2");
-    			add_location(svg5, file$4, 265, 14, 8061);
-    			attr_dev(a4, "class", "nav-link");
-    			attr_dev(a4, "href", "#");
-    			add_location(a4, file$4, 264, 12, 8017);
-    			attr_dev(li4, "class", "nav-item");
-    			add_location(li4, file$4, 263, 10, 7983);
-    			attr_dev(polygon, "points", "12 2 2 7 12 12 22 7 12 2");
-    			add_location(polygon, file$4, 297, 47, 9183);
-    			attr_dev(polyline2, "points", "2 17 12 22 22 17");
-    			add_location(polyline2, file$4, 299, 16, 9263);
-    			attr_dev(polyline3, "points", "2 12 12 17 22 12");
-    			add_location(polyline3, file$4, 300, 16, 9318);
+    			attr_dev(svg5, "class", "feather feather-layers");
+    			add_location(svg5, file$4, 124, 14, 4257);
+    			attr_dev(a5, "class", "nav-link");
+    			attr_dev(a5, "href", "#");
+    			add_location(a5, file$4, 123, 12, 4213);
+    			attr_dev(li5, "class", "nav-item");
+    			add_location(li5, file$4, 122, 10, 4179);
+    			attr_dev(ul0, "class", "nav flex-column");
+    			add_location(ul0, file$4, 21, 8, 515);
+    			add_location(span, file$4, 145, 10, 5017);
+    			attr_dev(circle3, "cx", "12");
+    			attr_dev(circle3, "cy", "12");
+    			attr_dev(circle3, "r", "10");
+    			add_location(circle3, file$4, 157, 50, 5489);
+    			attr_dev(line3, "x1", "12");
+    			attr_dev(line3, "y1", "8");
+    			attr_dev(line3, "x2", "12");
+    			attr_dev(line3, "y2", "16");
+    			add_location(line3, file$4, 161, 14, 5585);
+    			attr_dev(line4, "x1", "8");
+    			attr_dev(line4, "y1", "12");
+    			attr_dev(line4, "x2", "16");
+    			attr_dev(line4, "y2", "12");
+    			add_location(line4, file$4, 162, 14, 5639);
     			attr_dev(svg6, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg6, "width", "24");
     			attr_dev(svg6, "height", "24");
@@ -2839,30 +2045,30 @@ var app = (function () {
     			attr_dev(svg6, "stroke-width", "2");
     			attr_dev(svg6, "stroke-linecap", "round");
     			attr_dev(svg6, "stroke-linejoin", "round");
-    			attr_dev(svg6, "class", "feather feather-layers");
-    			add_location(svg6, file$4, 287, 14, 8811);
-    			attr_dev(a5, "class", "nav-link");
-    			attr_dev(a5, "href", "#");
-    			add_location(a5, file$4, 286, 12, 8767);
-    			attr_dev(li5, "class", "nav-item");
-    			add_location(li5, file$4, 285, 10, 8733);
-    			attr_dev(ul0, "class", "nav flex-column");
-    			add_location(ul0, file$4, 184, 8, 5069);
-    			add_location(span, file$4, 308, 10, 9571);
-    			attr_dev(circle3, "cx", "12");
-    			attr_dev(circle3, "cy", "12");
-    			attr_dev(circle3, "r", "10");
-    			add_location(circle3, file$4, 320, 50, 10043);
-    			attr_dev(line6, "x1", "12");
-    			attr_dev(line6, "y1", "8");
-    			attr_dev(line6, "x2", "12");
-    			attr_dev(line6, "y2", "16");
-    			add_location(line6, file$4, 324, 14, 10139);
-    			attr_dev(line7, "x1", "8");
-    			attr_dev(line7, "y1", "12");
-    			attr_dev(line7, "x2", "16");
-    			attr_dev(line7, "y2", "12");
-    			add_location(line7, file$4, 325, 14, 10193);
+    			attr_dev(svg6, "class", "feather feather-plus-circle");
+    			add_location(svg6, file$4, 147, 12, 5132);
+    			attr_dev(a6, "class", "link-secondary");
+    			attr_dev(a6, "href", "#");
+    			attr_dev(a6, "aria-label", "Add a new report");
+    			add_location(a6, file$4, 146, 10, 5054);
+    			attr_dev(h6, "class", "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted");
+    			add_location(h6, file$4, 143, 8, 4892);
+    			attr_dev(path6, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
+    			add_location(path6, file$4, 178, 50, 6219);
+    			attr_dev(polyline4, "points", "14 2 14 8 20 8");
+    			add_location(polyline4, file$4, 180, 16, 6325);
+    			attr_dev(line5, "x1", "16");
+    			attr_dev(line5, "y1", "13");
+    			attr_dev(line5, "x2", "8");
+    			attr_dev(line5, "y2", "13");
+    			add_location(line5, file$4, 181, 16, 6378);
+    			attr_dev(line6, "x1", "16");
+    			attr_dev(line6, "y1", "17");
+    			attr_dev(line6, "x2", "8");
+    			attr_dev(line6, "y2", "17");
+    			add_location(line6, file$4, 182, 16, 6434);
+    			attr_dev(polyline5, "points", "10 9 9 9 8 9");
+    			add_location(polyline5, file$4, 183, 16, 6490);
     			attr_dev(svg7, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg7, "width", "24");
     			attr_dev(svg7, "height", "24");
@@ -2872,30 +2078,29 @@ var app = (function () {
     			attr_dev(svg7, "stroke-width", "2");
     			attr_dev(svg7, "stroke-linecap", "round");
     			attr_dev(svg7, "stroke-linejoin", "round");
-    			attr_dev(svg7, "class", "feather feather-plus-circle");
-    			add_location(svg7, file$4, 310, 12, 9686);
-    			attr_dev(a6, "class", "link-secondary");
-    			attr_dev(a6, "href", "#");
-    			attr_dev(a6, "aria-label", "Add a new report");
-    			add_location(a6, file$4, 309, 10, 9608);
-    			attr_dev(h6, "class", "sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted");
-    			add_location(h6, file$4, 306, 8, 9446);
-    			attr_dev(path6, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
-    			add_location(path6, file$4, 341, 50, 10773);
-    			attr_dev(polyline4, "points", "14 2 14 8 20 8");
-    			add_location(polyline4, file$4, 343, 16, 10879);
+    			attr_dev(svg7, "class", "feather feather-file-text");
+    			add_location(svg7, file$4, 168, 14, 5844);
+    			attr_dev(a7, "class", "nav-link");
+    			attr_dev(a7, "href", "#");
+    			add_location(a7, file$4, 167, 12, 5800);
+    			attr_dev(li6, "class", "nav-item");
+    			add_location(li6, file$4, 166, 10, 5766);
+    			attr_dev(path7, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
+    			add_location(path7, file$4, 199, 50, 7055);
+    			attr_dev(polyline6, "points", "14 2 14 8 20 8");
+    			add_location(polyline6, file$4, 201, 16, 7161);
+    			attr_dev(line7, "x1", "16");
+    			attr_dev(line7, "y1", "13");
+    			attr_dev(line7, "x2", "8");
+    			attr_dev(line7, "y2", "13");
+    			add_location(line7, file$4, 202, 16, 7214);
     			attr_dev(line8, "x1", "16");
-    			attr_dev(line8, "y1", "13");
+    			attr_dev(line8, "y1", "17");
     			attr_dev(line8, "x2", "8");
-    			attr_dev(line8, "y2", "13");
-    			add_location(line8, file$4, 344, 16, 10932);
-    			attr_dev(line9, "x1", "16");
-    			attr_dev(line9, "y1", "17");
-    			attr_dev(line9, "x2", "8");
-    			attr_dev(line9, "y2", "17");
-    			add_location(line9, file$4, 345, 16, 10988);
-    			attr_dev(polyline5, "points", "10 9 9 9 8 9");
-    			add_location(polyline5, file$4, 346, 16, 11044);
+    			attr_dev(line8, "y2", "17");
+    			add_location(line8, file$4, 203, 16, 7270);
+    			attr_dev(polyline7, "points", "10 9 9 9 8 9");
+    			add_location(polyline7, file$4, 204, 16, 7326);
     			attr_dev(svg8, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg8, "width", "24");
     			attr_dev(svg8, "height", "24");
@@ -2906,28 +2111,28 @@ var app = (function () {
     			attr_dev(svg8, "stroke-linecap", "round");
     			attr_dev(svg8, "stroke-linejoin", "round");
     			attr_dev(svg8, "class", "feather feather-file-text");
-    			add_location(svg8, file$4, 331, 14, 10398);
-    			attr_dev(a7, "class", "nav-link");
-    			attr_dev(a7, "href", "#");
-    			add_location(a7, file$4, 330, 12, 10354);
-    			attr_dev(li6, "class", "nav-item");
-    			add_location(li6, file$4, 329, 10, 10320);
-    			attr_dev(path7, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
-    			add_location(path7, file$4, 362, 50, 11609);
-    			attr_dev(polyline6, "points", "14 2 14 8 20 8");
-    			add_location(polyline6, file$4, 364, 16, 11715);
+    			add_location(svg8, file$4, 189, 14, 6680);
+    			attr_dev(a8, "class", "nav-link");
+    			attr_dev(a8, "href", "#");
+    			add_location(a8, file$4, 188, 12, 6636);
+    			attr_dev(li7, "class", "nav-item");
+    			add_location(li7, file$4, 187, 10, 6602);
+    			attr_dev(path8, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
+    			add_location(path8, file$4, 220, 50, 7890);
+    			attr_dev(polyline8, "points", "14 2 14 8 20 8");
+    			add_location(polyline8, file$4, 222, 16, 7996);
+    			attr_dev(line9, "x1", "16");
+    			attr_dev(line9, "y1", "13");
+    			attr_dev(line9, "x2", "8");
+    			attr_dev(line9, "y2", "13");
+    			add_location(line9, file$4, 223, 16, 8049);
     			attr_dev(line10, "x1", "16");
-    			attr_dev(line10, "y1", "13");
+    			attr_dev(line10, "y1", "17");
     			attr_dev(line10, "x2", "8");
-    			attr_dev(line10, "y2", "13");
-    			add_location(line10, file$4, 365, 16, 11768);
-    			attr_dev(line11, "x1", "16");
-    			attr_dev(line11, "y1", "17");
-    			attr_dev(line11, "x2", "8");
-    			attr_dev(line11, "y2", "17");
-    			add_location(line11, file$4, 366, 16, 11824);
-    			attr_dev(polyline7, "points", "10 9 9 9 8 9");
-    			add_location(polyline7, file$4, 367, 16, 11880);
+    			attr_dev(line10, "y2", "17");
+    			add_location(line10, file$4, 224, 16, 8105);
+    			attr_dev(polyline9, "points", "10 9 9 9 8 9");
+    			add_location(polyline9, file$4, 225, 16, 8161);
     			attr_dev(svg9, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg9, "width", "24");
     			attr_dev(svg9, "height", "24");
@@ -2938,28 +2143,28 @@ var app = (function () {
     			attr_dev(svg9, "stroke-linecap", "round");
     			attr_dev(svg9, "stroke-linejoin", "round");
     			attr_dev(svg9, "class", "feather feather-file-text");
-    			add_location(svg9, file$4, 352, 14, 11234);
-    			attr_dev(a8, "class", "nav-link");
-    			attr_dev(a8, "href", "#");
-    			add_location(a8, file$4, 351, 12, 11190);
-    			attr_dev(li7, "class", "nav-item");
-    			add_location(li7, file$4, 350, 10, 11156);
-    			attr_dev(path8, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
-    			add_location(path8, file$4, 383, 50, 12444);
-    			attr_dev(polyline8, "points", "14 2 14 8 20 8");
-    			add_location(polyline8, file$4, 385, 16, 12550);
+    			add_location(svg9, file$4, 210, 14, 7515);
+    			attr_dev(a9, "class", "nav-link");
+    			attr_dev(a9, "href", "#");
+    			add_location(a9, file$4, 209, 12, 7471);
+    			attr_dev(li8, "class", "nav-item");
+    			add_location(li8, file$4, 208, 10, 7437);
+    			attr_dev(path9, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
+    			add_location(path9, file$4, 241, 50, 8730);
+    			attr_dev(polyline10, "points", "14 2 14 8 20 8");
+    			add_location(polyline10, file$4, 243, 16, 8836);
+    			attr_dev(line11, "x1", "16");
+    			attr_dev(line11, "y1", "13");
+    			attr_dev(line11, "x2", "8");
+    			attr_dev(line11, "y2", "13");
+    			add_location(line11, file$4, 244, 16, 8889);
     			attr_dev(line12, "x1", "16");
-    			attr_dev(line12, "y1", "13");
+    			attr_dev(line12, "y1", "17");
     			attr_dev(line12, "x2", "8");
-    			attr_dev(line12, "y2", "13");
-    			add_location(line12, file$4, 386, 16, 12603);
-    			attr_dev(line13, "x1", "16");
-    			attr_dev(line13, "y1", "17");
-    			attr_dev(line13, "x2", "8");
-    			attr_dev(line13, "y2", "17");
-    			add_location(line13, file$4, 387, 16, 12659);
-    			attr_dev(polyline9, "points", "10 9 9 9 8 9");
-    			add_location(polyline9, file$4, 388, 16, 12715);
+    			attr_dev(line12, "y2", "17");
+    			add_location(line12, file$4, 245, 16, 8945);
+    			attr_dev(polyline11, "points", "10 9 9 9 8 9");
+    			add_location(polyline11, file$4, 246, 16, 9001);
     			attr_dev(svg10, "xmlns", "http://www.w3.org/2000/svg");
     			attr_dev(svg10, "width", "24");
     			attr_dev(svg10, "height", "24");
@@ -2970,380 +2175,149 @@ var app = (function () {
     			attr_dev(svg10, "stroke-linecap", "round");
     			attr_dev(svg10, "stroke-linejoin", "round");
     			attr_dev(svg10, "class", "feather feather-file-text");
-    			add_location(svg10, file$4, 373, 14, 12069);
-    			attr_dev(a9, "class", "nav-link");
-    			attr_dev(a9, "href", "#");
-    			add_location(a9, file$4, 372, 12, 12025);
-    			attr_dev(li8, "class", "nav-item");
-    			add_location(li8, file$4, 371, 10, 11991);
-    			attr_dev(path9, "d", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z");
-    			add_location(path9, file$4, 404, 50, 13284);
-    			attr_dev(polyline10, "points", "14 2 14 8 20 8");
-    			add_location(polyline10, file$4, 406, 16, 13390);
-    			attr_dev(line14, "x1", "16");
-    			attr_dev(line14, "y1", "13");
-    			attr_dev(line14, "x2", "8");
-    			attr_dev(line14, "y2", "13");
-    			add_location(line14, file$4, 407, 16, 13443);
-    			attr_dev(line15, "x1", "16");
-    			attr_dev(line15, "y1", "17");
-    			attr_dev(line15, "x2", "8");
-    			attr_dev(line15, "y2", "17");
-    			add_location(line15, file$4, 408, 16, 13499);
-    			attr_dev(polyline11, "points", "10 9 9 9 8 9");
-    			add_location(polyline11, file$4, 409, 16, 13555);
-    			attr_dev(svg11, "xmlns", "http://www.w3.org/2000/svg");
-    			attr_dev(svg11, "width", "24");
-    			attr_dev(svg11, "height", "24");
-    			attr_dev(svg11, "viewBox", "0 0 24 24");
-    			attr_dev(svg11, "fill", "none");
-    			attr_dev(svg11, "stroke", "currentColor");
-    			attr_dev(svg11, "stroke-width", "2");
-    			attr_dev(svg11, "stroke-linecap", "round");
-    			attr_dev(svg11, "stroke-linejoin", "round");
-    			attr_dev(svg11, "class", "feather feather-file-text");
-    			add_location(svg11, file$4, 394, 14, 12909);
+    			add_location(svg10, file$4, 231, 14, 8355);
     			attr_dev(a10, "class", "nav-link");
     			attr_dev(a10, "href", "#");
-    			add_location(a10, file$4, 393, 12, 12865);
+    			add_location(a10, file$4, 230, 12, 8311);
     			attr_dev(li9, "class", "nav-item");
-    			add_location(li9, file$4, 392, 10, 12831);
+    			add_location(li9, file$4, 229, 10, 8277);
     			attr_dev(ul1, "class", "nav flex-column mb-2");
-    			add_location(ul1, file$4, 328, 8, 10276);
-    			attr_dev(div4, "class", "position-sticky pt-3");
-    			add_location(div4, file$4, 183, 6, 5026);
+    			add_location(ul1, file$4, 165, 8, 5722);
+    			attr_dev(div1, "class", "position-sticky pt-3");
+    			add_location(div1, file$4, 20, 6, 472);
     			attr_dev(nav, "id", "sidebarMenu");
     			attr_dev(nav, "class", "col-md-3 col-lg-2 d-md-block bg-light sidebar collapse");
-    			add_location(nav, file$4, 180, 4, 4922);
-    			attr_dev(div5, "class", "row");
-    			add_location(div5, file$4, 7, 2, 118);
-    			attr_dev(div6, "class", "container-fluid");
-    			add_location(div6, file$4, 6, 0, 86);
+    			add_location(nav, file$4, 17, 4, 368);
+    			attr_dev(div2, "class", "row");
+    			add_location(div2, file$4, 9, 2, 191);
+    			attr_dev(div3, "class", "container-fluid");
+    			add_location(div3, file$4, 8, 0, 131);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div6, anchor);
-    			append_dev(div6, div5);
-    			append_dev(div5, main);
-    			append_dev(main, div2);
-    			append_dev(div2, h1);
-    			append_dev(div2, t1);
-    			append_dev(div2, div1);
-    			append_dev(div1, div0);
-    			append_dev(div0, button0);
-    			append_dev(div0, t3);
-    			append_dev(div0, button1);
-    			append_dev(div1, t5);
-    			append_dev(div1, button2);
-    			append_dev(button2, svg0);
-    			append_dev(svg0, rect);
-    			append_dev(svg0, line0);
-    			append_dev(svg0, line1);
-    			append_dev(svg0, line2);
-    			append_dev(button2, t6);
-    			append_dev(main, t7);
+    			insert_dev(target, div3, anchor);
+    			append_dev(div3, div2);
+    			append_dev(div2, main);
+    			append_dev(main, div0);
+    			append_dev(div0, h1);
+    			append_dev(main, t1);
     			mount_component(timer, main, null);
-    			append_dev(main, t8);
-    			append_dev(main, h2);
-    			append_dev(main, t10);
-    			append_dev(main, div3);
-    			append_dev(div3, table);
-    			append_dev(table, thead);
-    			append_dev(thead, tr0);
-    			append_dev(tr0, th0);
-    			append_dev(tr0, t12);
-    			append_dev(tr0, th1);
-    			append_dev(tr0, t14);
-    			append_dev(tr0, th2);
-    			append_dev(tr0, t16);
-    			append_dev(tr0, th3);
-    			append_dev(tr0, t18);
-    			append_dev(tr0, th4);
-    			append_dev(table, t20);
-    			append_dev(table, tbody);
-    			append_dev(tbody, tr1);
-    			append_dev(tr1, td0);
-    			append_dev(tr1, t22);
-    			append_dev(tr1, td1);
-    			append_dev(tr1, t24);
-    			append_dev(tr1, td2);
-    			append_dev(tr1, t26);
-    			append_dev(tr1, td3);
-    			append_dev(tr1, t28);
-    			append_dev(tr1, td4);
-    			append_dev(tbody, t30);
-    			append_dev(tbody, tr2);
-    			append_dev(tr2, td5);
-    			append_dev(tr2, t32);
-    			append_dev(tr2, td6);
-    			append_dev(tr2, t34);
-    			append_dev(tr2, td7);
-    			append_dev(tr2, t36);
-    			append_dev(tr2, td8);
-    			append_dev(tr2, t38);
-    			append_dev(tr2, td9);
-    			append_dev(tbody, t40);
-    			append_dev(tbody, tr3);
-    			append_dev(tr3, td10);
-    			append_dev(tr3, t42);
-    			append_dev(tr3, td11);
-    			append_dev(tr3, t44);
-    			append_dev(tr3, td12);
-    			append_dev(tr3, t46);
-    			append_dev(tr3, td13);
-    			append_dev(tr3, t48);
-    			append_dev(tr3, td14);
-    			append_dev(tbody, t50);
-    			append_dev(tbody, tr4);
-    			append_dev(tr4, td15);
-    			append_dev(tr4, t52);
-    			append_dev(tr4, td16);
-    			append_dev(tr4, t54);
-    			append_dev(tr4, td17);
-    			append_dev(tr4, t56);
-    			append_dev(tr4, td18);
-    			append_dev(tr4, t58);
-    			append_dev(tr4, td19);
-    			append_dev(tbody, t60);
-    			append_dev(tbody, tr5);
-    			append_dev(tr5, td20);
-    			append_dev(tr5, t62);
-    			append_dev(tr5, td21);
-    			append_dev(tr5, t64);
-    			append_dev(tr5, td22);
-    			append_dev(tr5, t66);
-    			append_dev(tr5, td23);
-    			append_dev(tr5, t68);
-    			append_dev(tr5, td24);
-    			append_dev(tbody, t70);
-    			append_dev(tbody, tr6);
-    			append_dev(tr6, td25);
-    			append_dev(tr6, t72);
-    			append_dev(tr6, td26);
-    			append_dev(tr6, t74);
-    			append_dev(tr6, td27);
-    			append_dev(tr6, t76);
-    			append_dev(tr6, td28);
-    			append_dev(tr6, t78);
-    			append_dev(tr6, td29);
-    			append_dev(tbody, t80);
-    			append_dev(tbody, tr7);
-    			append_dev(tr7, td30);
-    			append_dev(tr7, t82);
-    			append_dev(tr7, td31);
-    			append_dev(tr7, t84);
-    			append_dev(tr7, td32);
-    			append_dev(tr7, t86);
-    			append_dev(tr7, td33);
-    			append_dev(tr7, t88);
-    			append_dev(tr7, td34);
-    			append_dev(tbody, t90);
-    			append_dev(tbody, tr8);
-    			append_dev(tr8, td35);
-    			append_dev(tr8, t92);
-    			append_dev(tr8, td36);
-    			append_dev(tr8, t94);
-    			append_dev(tr8, td37);
-    			append_dev(tr8, t96);
-    			append_dev(tr8, td38);
-    			append_dev(tr8, t98);
-    			append_dev(tr8, td39);
-    			append_dev(tbody, t100);
-    			append_dev(tbody, tr9);
-    			append_dev(tr9, td40);
-    			append_dev(tr9, t102);
-    			append_dev(tr9, td41);
-    			append_dev(tr9, t104);
-    			append_dev(tr9, td42);
-    			append_dev(tr9, t106);
-    			append_dev(tr9, td43);
-    			append_dev(tr9, t108);
-    			append_dev(tr9, td44);
-    			append_dev(tbody, t110);
-    			append_dev(tbody, tr10);
-    			append_dev(tr10, td45);
-    			append_dev(tr10, t112);
-    			append_dev(tr10, td46);
-    			append_dev(tr10, t114);
-    			append_dev(tr10, td47);
-    			append_dev(tr10, t116);
-    			append_dev(tr10, td48);
-    			append_dev(tr10, t118);
-    			append_dev(tr10, td49);
-    			append_dev(tbody, t120);
-    			append_dev(tbody, tr11);
-    			append_dev(tr11, td50);
-    			append_dev(tr11, t122);
-    			append_dev(tr11, td51);
-    			append_dev(tr11, t124);
-    			append_dev(tr11, td52);
-    			append_dev(tr11, t126);
-    			append_dev(tr11, td53);
-    			append_dev(tr11, t128);
-    			append_dev(tr11, td54);
-    			append_dev(tbody, t130);
-    			append_dev(tbody, tr12);
-    			append_dev(tr12, td55);
-    			append_dev(tr12, t132);
-    			append_dev(tr12, td56);
-    			append_dev(tr12, t134);
-    			append_dev(tr12, td57);
-    			append_dev(tr12, t136);
-    			append_dev(tr12, td58);
-    			append_dev(tr12, t138);
-    			append_dev(tr12, td59);
-    			append_dev(tbody, t140);
-    			append_dev(tbody, tr13);
-    			append_dev(tr13, td60);
-    			append_dev(tr13, t142);
-    			append_dev(tr13, td61);
-    			append_dev(tr13, t144);
-    			append_dev(tr13, td62);
-    			append_dev(tr13, t146);
-    			append_dev(tr13, td63);
-    			append_dev(tr13, t148);
-    			append_dev(tr13, td64);
-    			append_dev(tbody, t150);
-    			append_dev(tbody, tr14);
-    			append_dev(tr14, td65);
-    			append_dev(tr14, t152);
-    			append_dev(tr14, td66);
-    			append_dev(tr14, t154);
-    			append_dev(tr14, td67);
-    			append_dev(tr14, t156);
-    			append_dev(tr14, td68);
-    			append_dev(tr14, t158);
-    			append_dev(tr14, td69);
-    			append_dev(tbody, t160);
-    			append_dev(tbody, tr15);
-    			append_dev(tr15, td70);
-    			append_dev(tr15, t162);
-    			append_dev(tr15, td71);
-    			append_dev(tr15, t164);
-    			append_dev(tr15, td72);
-    			append_dev(tr15, t166);
-    			append_dev(tr15, td73);
-    			append_dev(tr15, t168);
-    			append_dev(tr15, td74);
-    			append_dev(tbody, t170);
-    			append_dev(tbody, tr16);
-    			append_dev(tr16, td75);
-    			append_dev(tr16, t172);
-    			append_dev(tr16, td76);
-    			append_dev(tr16, t174);
-    			append_dev(tr16, td77);
-    			append_dev(tr16, t176);
-    			append_dev(tr16, td78);
-    			append_dev(tr16, t178);
-    			append_dev(tr16, td79);
-    			append_dev(div5, t180);
-    			append_dev(div5, nav);
-    			append_dev(nav, div4);
-    			append_dev(div4, ul0);
+    			append_dev(div2, t2);
+    			append_dev(div2, nav);
+    			append_dev(nav, div1);
+    			append_dev(div1, ul0);
     			append_dev(ul0, li0);
     			append_dev(li0, a0);
-    			append_dev(a0, svg1);
-    			append_dev(svg1, path0);
-    			append_dev(svg1, polyline0);
-    			append_dev(a0, t181);
-    			append_dev(ul0, t182);
+    			append_dev(a0, svg0);
+    			append_dev(svg0, path0);
+    			append_dev(svg0, polyline0);
+    			append_dev(a0, t3);
+    			append_dev(ul0, t4);
     			append_dev(ul0, li1);
     			append_dev(li1, a1);
-    			append_dev(a1, svg2);
-    			append_dev(svg2, path1);
-    			append_dev(svg2, polyline1);
-    			append_dev(a1, t183);
-    			append_dev(ul0, t184);
+    			append_dev(a1, svg1);
+    			append_dev(svg1, path1);
+    			append_dev(svg1, polyline1);
+    			append_dev(a1, t5);
+    			append_dev(ul0, t6);
     			append_dev(ul0, li2);
     			append_dev(li2, a2);
-    			append_dev(a2, svg3);
-    			append_dev(svg3, circle0);
-    			append_dev(svg3, circle1);
-    			append_dev(svg3, path2);
-    			append_dev(a2, t185);
-    			append_dev(ul0, t186);
+    			append_dev(a2, svg2);
+    			append_dev(svg2, circle0);
+    			append_dev(svg2, circle1);
+    			append_dev(svg2, path2);
+    			append_dev(a2, t7);
+    			append_dev(ul0, t8);
     			append_dev(ul0, li3);
     			append_dev(li3, a3);
-    			append_dev(a3, svg4);
-    			append_dev(svg4, path3);
-    			append_dev(svg4, circle2);
-    			append_dev(svg4, path4);
-    			append_dev(svg4, path5);
-    			append_dev(a3, t187);
-    			append_dev(ul0, t188);
+    			append_dev(a3, svg3);
+    			append_dev(svg3, path3);
+    			append_dev(svg3, circle2);
+    			append_dev(svg3, path4);
+    			append_dev(svg3, path5);
+    			append_dev(a3, t9);
+    			append_dev(ul0, t10);
     			append_dev(ul0, li4);
     			append_dev(li4, a4);
-    			append_dev(a4, svg5);
-    			append_dev(svg5, line3);
-    			append_dev(svg5, line4);
-    			append_dev(svg5, line5);
-    			append_dev(a4, t189);
-    			append_dev(ul0, t190);
+    			append_dev(a4, svg4);
+    			append_dev(svg4, line0);
+    			append_dev(svg4, line1);
+    			append_dev(svg4, line2);
+    			append_dev(a4, t11);
+    			append_dev(ul0, t12);
     			append_dev(ul0, li5);
     			append_dev(li5, a5);
-    			append_dev(a5, svg6);
-    			append_dev(svg6, polygon);
-    			append_dev(svg6, polyline2);
-    			append_dev(svg6, polyline3);
-    			append_dev(a5, t191);
-    			append_dev(div4, t192);
-    			append_dev(div4, h6);
+    			append_dev(a5, svg5);
+    			append_dev(svg5, polygon);
+    			append_dev(svg5, polyline2);
+    			append_dev(svg5, polyline3);
+    			append_dev(a5, t13);
+    			append_dev(div1, t14);
+    			append_dev(div1, h6);
     			append_dev(h6, span);
-    			append_dev(h6, t194);
+    			append_dev(h6, t16);
     			append_dev(h6, a6);
-    			append_dev(a6, svg7);
-    			append_dev(svg7, circle3);
-    			append_dev(svg7, line6);
-    			append_dev(svg7, line7);
-    			append_dev(div4, t195);
-    			append_dev(div4, ul1);
+    			append_dev(a6, svg6);
+    			append_dev(svg6, circle3);
+    			append_dev(svg6, line3);
+    			append_dev(svg6, line4);
+    			append_dev(div1, t17);
+    			append_dev(div1, ul1);
     			append_dev(ul1, li6);
     			append_dev(li6, a7);
-    			append_dev(a7, svg8);
-    			append_dev(svg8, path6);
-    			append_dev(svg8, polyline4);
-    			append_dev(svg8, line8);
-    			append_dev(svg8, line9);
-    			append_dev(svg8, polyline5);
-    			append_dev(a7, t196);
-    			append_dev(ul1, t197);
+    			append_dev(a7, svg7);
+    			append_dev(svg7, path6);
+    			append_dev(svg7, polyline4);
+    			append_dev(svg7, line5);
+    			append_dev(svg7, line6);
+    			append_dev(svg7, polyline5);
+    			append_dev(a7, t18);
+    			append_dev(ul1, t19);
     			append_dev(ul1, li7);
     			append_dev(li7, a8);
-    			append_dev(a8, svg9);
-    			append_dev(svg9, path7);
-    			append_dev(svg9, polyline6);
-    			append_dev(svg9, line10);
-    			append_dev(svg9, line11);
-    			append_dev(svg9, polyline7);
-    			append_dev(a8, t198);
-    			append_dev(ul1, t199);
+    			append_dev(a8, svg8);
+    			append_dev(svg8, path7);
+    			append_dev(svg8, polyline6);
+    			append_dev(svg8, line7);
+    			append_dev(svg8, line8);
+    			append_dev(svg8, polyline7);
+    			append_dev(a8, t20);
+    			append_dev(ul1, t21);
     			append_dev(ul1, li8);
     			append_dev(li8, a9);
-    			append_dev(a9, svg10);
-    			append_dev(svg10, path8);
-    			append_dev(svg10, polyline8);
-    			append_dev(svg10, line12);
-    			append_dev(svg10, line13);
-    			append_dev(svg10, polyline9);
-    			append_dev(a9, t200);
-    			append_dev(ul1, t201);
+    			append_dev(a9, svg9);
+    			append_dev(svg9, path8);
+    			append_dev(svg9, polyline8);
+    			append_dev(svg9, line9);
+    			append_dev(svg9, line10);
+    			append_dev(svg9, polyline9);
+    			append_dev(a9, t22);
+    			append_dev(ul1, t23);
     			append_dev(ul1, li9);
     			append_dev(li9, a10);
-    			append_dev(a10, svg11);
-    			append_dev(svg11, path9);
-    			append_dev(svg11, polyline10);
-    			append_dev(svg11, line14);
-    			append_dev(svg11, line15);
-    			append_dev(svg11, polyline11);
-    			append_dev(a10, t202);
+    			append_dev(a10, svg10);
+    			append_dev(svg10, path9);
+    			append_dev(svg10, polyline10);
+    			append_dev(svg10, line11);
+    			append_dev(svg10, line12);
+    			append_dev(svg10, polyline11);
+    			append_dev(a10, t24);
     			current = true;
     		},
     		p: noop,
     		i: function intro(local) {
     			if (current) return;
     			transition_in(timer.$$.fragment, local);
+
+    			if (!div3_intro) {
+    				add_render_callback(() => {
+    					div3_intro = create_in_transition(div3, fade, { duration: 250 });
+    					div3_intro.start();
+    				});
+    			}
+
     			current = true;
     		},
     		o: function outro(local) {
@@ -3351,7 +2325,7 @@ var app = (function () {
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div6);
+    			if (detaching) detach_dev(div3);
     			destroy_component(timer);
     		}
     	};
@@ -3381,7 +2355,7 @@ var app = (function () {
     		if ("currentEvent" in $$props) $$invalidate(0, currentEvent = $$props.currentEvent);
     	};
 
-    	$$self.$capture_state = () => ({ Timer, currentEvent });
+    	$$self.$capture_state = () => ({ fade, Timer, currentEvent });
 
     	$$self.$inject_state = $$props => {
     		if ("currentEvent" in $$props) $$invalidate(0, currentEvent = $$props.currentEvent);
@@ -3424,11 +2398,9 @@ var app = (function () {
     }
 
     /* src/App.svelte generated by Svelte v3.29.7 */
-
-    const { console: console_1 } = globals;
     const file$5 = "src/App.svelte";
 
-    // (28:0) {:else}
+    // (26:0) {:else}
     function create_else_block_1(ctx) {
     	let login;
     	let current;
@@ -3461,14 +2433,14 @@ var app = (function () {
     		block,
     		id: create_else_block_1.name,
     		type: "else",
-    		source: "(28:0) {:else}",
+    		source: "(26:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (22:0) {#if isLoggedin}
+    // (20:0) {#if isLoggedin}
     function create_if_block$1(ctx) {
     	let current_block_type_index;
     	let if_block;
@@ -3541,14 +2513,14 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(22:0) {#if isLoggedin}",
+    		source: "(20:0) {#if isLoggedin}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (25:2) {:else}
+    // (23:2) {:else}
     function create_else_block$1(ctx) {
     	let solve;
     	let updating_currentEvent;
@@ -3604,14 +2576,14 @@ var app = (function () {
     		block,
     		id: create_else_block$1.name,
     		type: "else",
-    		source: "(25:2) {:else}",
+    		source: "(23:2) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (23:2) {#if !currentEvent}
+    // (21:2) {#if !currentEvent}
     function create_if_block_1$1(ctx) {
     	let dashboard;
     	let updating_currentEvent;
@@ -3667,7 +2639,7 @@ var app = (function () {
     		block,
     		id: create_if_block_1$1.name,
     		type: "if",
-    		source: "(23:2) {#if !currentEvent}",
+    		source: "(21:2) {#if !currentEvent}",
     		ctx
     	});
 
@@ -3727,7 +2699,7 @@ var app = (function () {
     			if_block.c();
     			if_block_anchor = empty();
     			attr_dev(div, "class", "spacing svelte-nl9otk");
-    			add_location(div, file$5, 20, 0, 407);
+    			add_location(div, file$5, 18, 0, 377);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -3820,11 +2792,10 @@ var app = (function () {
     	validate_slots("App", slots, []);
     	let isLoggedin = false;
     	let currentEvent = "";
-    	console.log(currentEvent);
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<App> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
     	function navbar_isLoggedin_binding(value) {
@@ -3891,10 +2862,7 @@ var app = (function () {
 
     const app = new App({
       target: document.body,
-      	intro: true,
-      props: {
-    	name: 'world',
-      },
+      intro: true,
     });
 
     return app;

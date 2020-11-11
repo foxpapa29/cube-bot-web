@@ -6,8 +6,6 @@
 
   let isLoggedin = false;
   let currentEvent = '';
-
-  console.log(currentEvent);
 </script>
 
 <style>
