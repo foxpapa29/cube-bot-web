@@ -24,7 +24,7 @@
   };
 
   const getUserID = async () =>
-    fetch(`${apiUrl}/api/getDiscordData?code=${urlParams.get("code")}`)
+    fetch(`${apiUrl}/api/oauth/discord/${urlParams.get("code")}`)
       .then((res) => res.json())
       .then((res) => {
         if (res.isInGuild) {
