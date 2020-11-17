@@ -1,5 +1,10 @@
 <script>
-  import dayjs from 'dayjs';
+  import dayjs from "dayjs";
+  import { createEventDispatcher } from "svelte";
+
+  import { msToTime } from "../tools/calculator";
+  const dispatch = createEventDispatcher();
+  const updateTimesArray = (time) => dispatch("newTime", { time });
 
   let startTime;
   let timeout;
@@ -7,21 +12,9 @@
   let green = false;
   let red = false;
   let running = false;
-  let timerColor = 'black';
-  let timerText = 'Ready';
+  let timerText = "Ready";
+  let finalTime;
   let waiting = false;
-
-  const msToTime = (t) => {
-    const time = Number(t);
-
-    const min = Math.floor(time / (60 * 1000));
-    let s = ((time - min * 60 * 1000) / 1000).toFixed(2);
-    if (min > 0 && s.length === 4) {
-      s = '0' + s;
-    }
-
-    return `${min ? min + ':' : ''}${s}`;
-  };
 
   const displayTime = () => (timerText = msToTime(dayjs().diff(startTime)));
 
@@ -38,12 +31,14 @@
     red = true;
     clearTimeout(timeout);
 
-    timerText = msToTime(dayjs().diff(startTime));
+    finalTime = dayjs().diff(startTime);
+    timerText = msToTime(finalTime);
+    updateTimesArray(finalTime);
   };
 
   const timerSetReady = () => {
     waiting = false;
-    timerText = '0.00';
+    timerText = "0.00";
     green = true;
   };
 
@@ -57,14 +52,14 @@
     }
     if (running) {
       stopTimer();
-    } else if (event.code === 'Space') {
+    } else if (event.code === "Space") {
       timerSetReady();
     }
     allowed = false;
   };
 
   const up = (event) => {
-    if (!running && !waiting && event.code === 'Space') {
+    if (!running && !waiting && event.code === "Space") {
       startTimer();
     } else {
       timerAfterStop();
@@ -86,7 +81,7 @@
 <svelte:window on:keydown={down} on:keyup={up} />
 
 <h1
-  class="display-1 text-center"
+  class="display-1"
   class:green
   class:red
   on:touchstart={() => down({ code: 'Space' })}

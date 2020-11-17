@@ -1,13 +1,16 @@
 <script>
-  import * as R from 'ramda';
+  import "bootstrap/js/dist/dropdown";
+  import * as R from "ramda";
+
+  import { events } from "./config";
+
   export let userID;
   export let username;
   export let avatar;
   export let currentEvent;
-  const events = ['333', '222', '444', 'minx'];
 </script>
 
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark ">
   <div class="container-fluid">
     <span class="navbar-brand mb-0 h1" on:click={() => (currentEvent = '')}>
       Cube Competitions
@@ -16,10 +19,7 @@
       class="navbar-toggler"
       type="button"
       data-toggle="collapse"
-      data-target="#navbarText"
-      aria-controls="navbarText"
-      aria-expanded="false"
-      aria-label="Toggle navigation">
+      data-target="#navbarText">
       <span class="navbar-toggler-icon" />
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
@@ -32,14 +32,10 @@
               class="btn btn-outline-light mr-2 dropdown-toggle"
               type="button"
               id="navbarDropdown"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false">
+              data-toggle="dropdown">
               {currentEvent}
             </button>
-            <div
-              class="dropdown-menu dropdown-menu-sm-right"
-              aria-labelledby="navbarDropdown">
+            <div class="dropdown-menu dropdown-menu-sm-right">
               <h6 class="dropdown-header">Event</h6>
               {#each events as e}
                 {#if e !== currentEvent}
@@ -57,9 +53,7 @@
             class="btn btn-outline-light dropdown-toggle"
             type="button"
             id="navbarDropdown"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false">
+            data-toggle="dropdown">
             {username}
             <img
               src="https://cdn.discordapp.com/avatars/{userID}/{avatar}{R.test(/^a_/, avatar) ? '.gif' : '.png'}"
@@ -67,18 +61,16 @@
               height="25px"
               class="rounded-circle" />
           </button>
-          <div
-            class="dropdown-menu dropdown-menu-sm-right"
-            aria-labelledby="navbarDropdown">
+          <div class="dropdown-menu dropdown-menu-sm-right">
             <a
-              class="dropdown-item text-reset"
+              class="dropdown-item text-reset text-decoration-none"
               href="/"
               on:click={() => localStorage.clear()}>Logout</a>
           </div>
         </span>
       {:else}
         <a
-          class="btn btn-light text-reset"
+          class="btn btn-light text-reset text-decoration-none"
           href="https://discord.com/api/oauth2/authorize?client_id=476105820929654796&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2F&response_type=code&scope=identify%20guilds">Log
           in</a>
       {/if}

@@ -1,15 +1,19 @@
 <script>
-  import Navbar from './Components/Navbar.svelte';
-  import Login from './Components/Login.svelte';
-  import Dashboard from './Components/Dashboard.svelte';
-  import Solve from './Components/Solve.svelte';
-  import Loading from './Components/Loading.svelte';
+  import * as R from "ramda";
+
+  import Navbar from "./Components/Navbar.svelte";
+  import Login from "./Components/Login.svelte";
+  import Dashboard from "./Components/Dashboard.svelte";
+  import Solve from "./Components/Solve.svelte";
+  import Loading from "./Components/Loading.svelte";
+
+  import { events, apiUrl } from "./Components/config";
 
   let loading = false;
-  let currentEvent = '';
-  let userID = localStorage.getItem('id');
-  let username = localStorage.getItem('username');
-  let avatar = localStorage.getItem('avatar');
+  let currentEvent = "";
+  let userID = localStorage.getItem("id");
+  let username = localStorage.getItem("username");
+  let avatar = localStorage.getItem("avatar");
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -20,7 +24,7 @@
   };
 
   const getUserID = async () =>
-    fetch(`http://localhost:3000/?code=${urlParams.get('code')}`)
+    fetch(`${apiUrl}/api/getDiscordData?code=${urlParams.get("code")}`)
       .then((res) => res.json())
       .then((res) => {
         if (res.isInGuild) {
@@ -30,33 +34,28 @@
           saveUserData(userID, username, avatar);
         }
       })
-      .then(() => (window.location.search = ''));
+      .then(() => (window.location.search = ""));
 
   if (!userID) {
-    if (urlParams.has('code')) {
+    if (urlParams.has("code")) {
       loading = true;
       getUserID();
     }
   }
-</script>
 
-<style>
-  .spacing {
-    height: 40px;
-  }
-</style>
+  let times = R.map((event) => ({ event, solves: [] }), events);
+</script>
 
 {#if loading}
   <Loading />
 {:else}
   <Navbar bind:userID bind:username bind:avatar bind:currentEvent />
 
-  <div class="spacing" />
   {#if userID}
     {#if !currentEvent}
       <Dashboard bind:currentEvent />
     {:else}
-      <Solve bind:currentEvent />
+      <Solve bind:currentEvent bind:times bind:userID />
     {/if}
   {:else}
     <Login />

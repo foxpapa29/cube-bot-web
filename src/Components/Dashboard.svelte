@@ -1,8 +1,8 @@
 <script>
   import { fade } from 'svelte/transition';
+  import { events } from './config';
 
   export let currentEvent;
-  const events = ['333', '222', '444', 'minx', '3bld', 'pyram'];
 </script>
 
 <style>

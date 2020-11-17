@@ -1,16 +1,12 @@
 <script>
-  window.setInterval(function () {
-    let wait = document.getElementById('wait');
-    if (wait.innerHTML.length >= 3) wait.innerHTML = '';
-    else wait.innerHTML += '.';
-  }, 200);
+  import { onMount } from "svelte";
+  onMount(() => {
+    window.setInterval(() => {
+      let wait = document.getElementById("wait");
+      if (wait.innerHTML.length >= 3) wait.innerHTML = ".";
+      else wait.innerHTML += ".";
+    }, 200);
+  });
 </script>
 
-<style>
-  div {
-    position: relative;
-    top: 40%;
-  }
-</style>
-
-<div id="wait" class="display-1 text-center" />
+<div id="wait" class="display-1">.</div>

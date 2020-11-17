@@ -4,7 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import analyze from 'rollup-plugin-analyzer';
-import sass from 'rollup-plugin-sass';
+import json from '@rollup/plugin-json';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -19,7 +19,7 @@ function serve() {
     writeBundle() {
       if (server) return;
       server = require('child_process').spawn(
-        'npm',
+        'yarn',
         ['run', 'start', '--', '--dev'],
         {
           stdio: ['ignore', 'inherit', 'inherit'],
@@ -48,12 +48,12 @@ export default {
         css.write('bundle.css');
       },
     }),
-    sass({output: 'sass.css'}),
     resolve({
       browser: true,
       dedupe: ['svelte'],
     }),
     commonjs(),
+    json(),
     !production && serve(),
     !production && livereload('docs'),
     production && analyze({ summaryOnly: true, limit: 10 }),
