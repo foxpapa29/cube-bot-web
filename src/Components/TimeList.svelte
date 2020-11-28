@@ -2,18 +2,12 @@
   import * as R from "ramda";
   import { onMount } from "svelte";
 
-  import {
-    applyPenality,
-    averageOfFiveCalculator,
-    msToTime,
-    timeToMs,
-  } from "../tools/calculator";
+  import { applyPenality, msToTime, timeToMs } from "../tools/calculator";
   import { submitEvent } from "../tools/submitTimes";
 
   export let times;
   export let currentTimesArray;
   export let currentTimesIndex;
-  export let userID;
 
   const updatePenality = (i, j, a) => {
     times[i].solves[j] = [times[i].solves[j][0], a];
@@ -36,7 +30,9 @@
   $: isValidInput = R.test(/^(?:([0-5]?\d):)?[0-5]?\d(\.\d+)?$/, inputTime);
 
   let isModalShown;
+  export let displayScrambles;
 
+  $: displayScrambles ? (localStorage.dscr = "👀") : (localStorage.dscr = "🙈");
   onMount(() => {
     const modal = document.getElementById("submitTimesConfirmation");
     modal.addEventListener("hide.bs.modal", () => (isModalShown = false));
@@ -100,21 +96,29 @@
         {/each}
       </tbody>
     </table>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 p-2">
     <button
-      class="btn btn-outline-dark btn-sm mt-2 {R.equals(5, R.length(currentTimesArray)) ? '' : 'disabled'}"
+      class="btn btn-outline-dark btn-sm {R.equals(5, R.length(currentTimesArray)) ? '' : 'disabled'}"
       data-toggle="modal"
       data-target="#submitTimesConfirmation">Submit times</button>
-    {#if R.equals(5, R.length(currentTimesArray))}
-      <p class="display-5">
-        ao5:
-        {msToTime(averageOfFiveCalculator(currentTimesArray))}
-      </p>
-    {:else}
-      <button
-        class="btn btn-outline-dark btn-sm mt-2"
-        data-toggle="modal"
-        data-target="#addTimeModal">Add time</button>
-    {/if}
+    <button
+      class="btn btn-outline-dark btn-sm {R.equals(5, R.length(currentTimesArray)) ? 'disabled' : ''}"
+      data-toggle="modal"
+      data-target="#addTimeModal">Add time</button>
+    <div class="form-check-inline">
+      <input
+        class="form-check-input btn-check"
+        type="checkbox"
+        value=""
+        id="flexCheckDefault"
+        bind:checked={displayScrambles} />
+      <label class="btn btn-outline-dark btn-sm" for="flexCheckDefault">
+        Display Scrambles
+      </label>
+    </div>
   </div>
 </div>
 
@@ -162,10 +166,10 @@
       </div>
       <div class="modal-body">
         {#if isModalShown}
-          {#await submitEvent(times[currentTimesIndex], userID)}
+          {#await submitEvent(times[currentTimesIndex], localStorage.token)}
             ...
           {:then response}
-            {response.result}
+            {response}
           {/await}
         {/if}
       </div>

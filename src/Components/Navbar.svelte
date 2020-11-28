@@ -71,7 +71,7 @@
       {:else}
         <a
           class="btn btn-light text-reset text-decoration-none"
-          href="https://discord.com/api/oauth2/authorize?client_id=476105820929654796&redirect_uri=http%3A%2F%2Fnogesma.github.io%2Fcube-bot-web&response_type=code&scope=guilds%20identify">Log
+          href="https://discord.com/api/oauth2/authorize?client_id=476105820929654796&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=code&scope=guilds%20identify">Log
           in</a>
       {/if}
     </div>

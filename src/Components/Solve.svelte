@@ -1,15 +1,18 @@
 <script>
   import { fade } from "svelte/transition";
   import * as R from "ramda";
+  import dayjs from "dayjs";
+  import confetti from "canvas-confetti";
 
   import Timer from "./Timer.svelte";
   import TimeList from "./TimeList.svelte";
-  import { apiUrl } from "./config";
+  import { averageOfFiveCalculator, msToTime } from "../tools/calculator";
+
   export let currentEvent;
   export let times;
-  export let userID;
 
   let scrambles = [];
+  let displayScrambles = localStorage.dscr === "👀";
 
   const newTime = (t) =>
     (times[currentTimesIndex].solves = [
@@ -17,13 +20,51 @@
       [t, 0],
     ]);
 
-  $: fetch(`${apiUrl}/api/scrambles/${currentEvent}/2020-11-15`)
+  $: fetch(`/api/scrambles/${currentEvent}/${dayjs().format("YYYY-MM-DD")}`)
     .then((res) => res.json())
     .then((s) => (scrambles = s.scrambles));
 
   $: currentTimesIndex = R.findIndex(R.propEq("event")(currentEvent))(times);
   $: currentTimesArray = times[currentTimesIndex].solves;
-  $: currentScramble = scrambles[R.length(currentTimesArray)] ?? "";
+  $: currentScramble =
+    scrambles[R.length(currentTimesArray)]?.scrambleString ?? "";
+  $: currentSVG = scrambles[R.length(currentTimesArray)]?.svg ?? "";
+
+  var count = 400;
+  var defaults = {
+    origin: { y: 0.7 },
+  };
+
+  function fire(particleRatio, opts) {
+    confetti(
+      Object.assign({}, defaults, opts, {
+        particleCount: Math.floor(count * particleRatio),
+      })
+    );
+  }
+
+  fire(0.25, {
+    spread: 26,
+    startVelocity: 55,
+  });
+  fire(0.2, {
+    spread: 60,
+  });
+  fire(0.35, {
+    spread: 100,
+    decay: 0.91,
+    scalar: 0.8,
+  });
+  fire(0.1, {
+    spread: 120,
+    startVelocity: 25,
+    decay: 0.92,
+    scalar: 1.2,
+  });
+  fire(0.1, {
+    spread: 120,
+    startVelocity: 45,
+  });
 </script>
 
 <style>
@@ -65,14 +106,16 @@
         bind:times
         bind:currentTimesArray
         bind:currentTimesIndex
-        bind:userID />
-      <!-- <div class="row">
-        <div class="col-12">
-          <div id="kpuzzleSVG">
-            {@html scrambleSVG}
+        bind:displayScrambles />
+      {#if R.equals(5, R.length(currentTimesArray))}
+        <p>ao5: {msToTime(averageOfFiveCalculator(currentTimesArray))}</p>
+      {:else if displayScrambles}
+        <div class="row">
+          <div class="col" id="svg">
+            {@html currentSVG}
           </div>
         </div>
-      </div> -->
+      {/if}
     </div>
   </div>
 </div>

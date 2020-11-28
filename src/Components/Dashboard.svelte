@@ -1,6 +1,6 @@
 <script>
-  import { fade } from 'svelte/transition';
-  import { events } from './config';
+  import { fade } from "svelte/transition";
+  import { events } from "./config";
 
   export let currentEvent;
 </script>

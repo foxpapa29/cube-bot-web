@@ -1,16 +1,20 @@
 import { parseTimesArray } from "./calculator";
-import { apiUrl } from "../Components/config";
 
-const submitEvent = (timesArray, author) => {
+const submitEvent = (timesArray, token) => {
   const { event, solves } = parseTimesArray(timesArray);
 
-  return fetch(`${apiUrl}/api/times`, {
+  return fetch(`/api/times`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ author, event, solves }),
-  }).then((res) => res.json());
+    body: JSON.stringify({ token, event, solves }),
+  })
+    .then((res) => res.json())
+    .then(({ result, refresh_token }) => {
+      localStorage.token = refresh_token;
+      return result;
+    });
 };
 
 export { submitEvent };
